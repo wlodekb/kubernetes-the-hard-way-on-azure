@@ -8,7 +8,7 @@ In this section you will provision a Certificate Authority that can be used to g
 
 Create the CA configuration file:
 
-```
+```shell
 cat > ca-config.json <<EOF
 {
   "signing": {
@@ -28,7 +28,7 @@ EOF
 
 Create the CA certificate signing request:
 
-```
+```shell
 cat > ca-csr.json <<EOF
 {
   "CN": "Kubernetes",
@@ -51,13 +51,13 @@ EOF
 
 Generate the CA certificate and private key:
 
-```
+```shell
 cfssl gencert -initca ca-csr.json | cfssljson -bare ca
 ```
 
 Results:
 
-```
+```shell
 ca-key.pem
 ca.pem
 ```
@@ -70,7 +70,7 @@ In this section you will generate client and server certificates for each Kubern
 
 Create the `admin` client certificate signing request:
 
-```
+```shell
 cat > admin-csr.json <<EOF
 {
   "CN": "admin",
@@ -93,7 +93,7 @@ EOF
 
 Generate the `admin` client certificate and private key:
 
-```
+```shell
 cfssl gencert \
   -ca=ca.pem \
   -ca-key=ca-key.pem \
@@ -104,7 +104,7 @@ cfssl gencert \
 
 Results:
 
-```
+```shell
 admin-key.pem
 admin.pem
 ```
@@ -115,7 +115,7 @@ Kubernetes uses a [special-purpose authorization mode](https://kubernetes.io/doc
 
 Generate a certificate and private key for each Kubernetes worker node:
 
-```
+```shell
 for instance in worker-0 worker-1 worker-2; do
 cat > ${instance}-csr.json <<EOF
 {
@@ -136,11 +136,10 @@ cat > ${instance}-csr.json <<EOF
 }
 EOF
 
-EXTERNAL_IP=$(gcloud compute instances describe ${instance} \
-  --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
+EXTERNAL_IP=$(az network public-ip show -g kubernetes \
+  -n kubernetes-pip --query ipAddress -otsv)
 
-INTERNAL_IP=$(gcloud compute instances describe ${instance} \
-  --format 'value(networkInterfaces[0].networkIP)')
+INTERNAL_IP=$(az vm show -d -n ${instance} -g kubernetes --query privateIps -otsv)
 
 cfssl gencert \
   -ca=ca.pem \
@@ -154,7 +153,7 @@ done
 
 Results:
 
-```
+```shell
 worker-0-key.pem
 worker-0.pem
 worker-1-key.pem
@@ -167,7 +166,7 @@ worker-2.pem
 
 Create the `kube-proxy` client certificate signing request:
 
-```
+```shell
 cat > kube-proxy-csr.json <<EOF
 {
   "CN": "system:kube-proxy",
@@ -190,7 +189,7 @@ EOF
 
 Generate the `kube-proxy` client certificate and private key:
 
-```
+```shell
 cfssl gencert \
   -ca=ca.pem \
   -ca-key=ca-key.pem \
@@ -201,7 +200,7 @@ cfssl gencert \
 
 Results:
 
-```
+```shell
 kube-proxy-key.pem
 kube-proxy.pem
 ```
@@ -212,15 +211,14 @@ The `kubernetes-the-hard-way` static IP address will be included in the list of 
 
 Retrieve the `kubernetes-the-hard-way` static IP address:
 
-```
-KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
-  --region $(gcloud config get-value compute/region) \
-  --format 'value(address)')
+```shell
+KUBERNETES_PUBLIC_ADDRESS=$(az network public-ip show -g kubernetes \
+  -n kubernetes-pip --query "ipAddress" -otsv)
 ```
 
 Create the Kubernetes API Server certificate signing request:
 
-```
+```shell
 cat > kubernetes-csr.json <<EOF
 {
   "CN": "kubernetes",
@@ -243,7 +241,7 @@ EOF
 
 Generate the Kubernetes API Server certificate and private key:
 
-```
+```shell
 cfssl gencert \
   -ca=ca.pem \
   -ca-key=ca-key.pem \
@@ -255,7 +253,7 @@ cfssl gencert \
 
 Results:
 
-```
+```shell
 kubernetes-key.pem
 kubernetes.pem
 ```
@@ -264,17 +262,23 @@ kubernetes.pem
 
 Copy the appropriate certificates and private keys to each worker instance:
 
-```
+```shell
 for instance in worker-0 worker-1 worker-2; do
-  gcloud compute scp ca.pem ${instance}-key.pem ${instance}.pem ${instance}:~/
+  PUBLIC_IP_ADDRESS=$(az network public-ip show -g kubernetes \
+    -n ${instance}-pip --query "ipAddress" -otsv)
+
+  scp ca.pem ${instance}-key.pem ${instance}.pem $(whoami)@${PUBLIC_IP_ADDRESS}:~/
 done
 ```
 
 Copy the appropriate certificates and private keys to each controller instance:
 
-```
+```shell
 for instance in controller-0 controller-1 controller-2; do
-  gcloud compute scp ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem ${instance}:~/
+  PUBLIC_IP_ADDRESS=$(az network public-ip show -g kubernetes \
+    -n ${instance}-pip --query "ipAddress" -otsv)
+
+  scp ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem $(whoami)@${PUBLIC_IP_ADDRESS}:~/
 done
 ```
 

@@ -10,34 +10,33 @@ Each kubeconfig requires a Kubernetes API Server to connect to. To support high 
 
 Retrieve the `kubernetes-the-hard-way` static IP address:
 
-```
-KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
-  --region $(gcloud config get-value compute/region) \
-  --format 'value(address)')
+```shell
+KUBERNETES_PUBLIC_ADDRESS=$(az network public-ip show -g kubernetes \
+  -n kubernetes-pip --query ipAddress -otsv)
 ```
 
 Generate a kubeconfig file suitable for authenticating as the `admin` user:
 
-```
+```shell
 kubectl config set-cluster kubernetes-the-hard-way \
   --certificate-authority=ca.pem \
   --embed-certs=true \
   --server=https://${KUBERNETES_PUBLIC_ADDRESS}:6443
 ```
 
-```
+```shell
 kubectl config set-credentials admin \
   --client-certificate=admin.pem \
   --client-key=admin-key.pem
 ```
 
-```
+```shell
 kubectl config set-context kubernetes-the-hard-way \
   --cluster=kubernetes-the-hard-way \
   --user=admin
 ```
 
-```
+```shell
 kubectl config use-context kubernetes-the-hard-way
 ```
 
@@ -45,34 +44,34 @@ kubectl config use-context kubernetes-the-hard-way
 
 Check the health of the remote Kubernetes cluster:
 
-```
+```shell
 kubectl get componentstatuses
 ```
 
 > output
 
-```
+```shell
 NAME                 STATUS    MESSAGE              ERROR
-controller-manager   Healthy   ok                   
-scheduler            Healthy   ok                   
-etcd-2               Healthy   {"health": "true"}   
-etcd-0               Healthy   {"health": "true"}   
-etcd-1               Healthy   {"health": "true"}  
+controller-manager   Healthy   ok
+scheduler            Healthy   ok
+etcd-2               Healthy   {"health": "true"}
+etcd-0               Healthy   {"health": "true"}
+etcd-1               Healthy   {"health": "true"}
 ```
 
 List the nodes in the remote Kubernetes cluster:
 
-```
+```shell
 kubectl get nodes
 ```
 
 > output
 
-```
+```shell
 NAME       STATUS    AGE       VERSION
-worker-0   Ready     7m        v1.7.4
-worker-1   Ready     4m        v1.7.4
-worker-2   Ready     1m        v1.7.4
+worker-0   Ready     7m        v1.7.5
+worker-1   Ready     4m        v1.7.5
+worker-2   Ready     1m        v1.7.5
 ```
 
 Next: [Provisioning Pod Network Routes](11-pod-network-routes.md)

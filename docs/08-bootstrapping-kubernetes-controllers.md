@@ -4,10 +4,14 @@ In this lab you will bootstrap the Kubernetes control plane across three compute
 
 ## Prerequisites
 
-The commands in this lab must be run on each controller instance: `controller-0`, `controller-1`, and `controller-2`. Login to each controller instance using the `gcloud` command. Example:
+The commands in this lab must be run on each controller instance: `controller-0`, `controller-1`, and `controller-2`. Login to each controller instance using the `az` command to find its public IP and ssh to it. Example:
 
-```
-gcloud compute ssh controller-0
+```shell
+CONTROLLER="controller-0"
+PUBLIC_IP_ADDRESS=$(az network public-ip show -g kubernetes \
+  -n ${CONTROLLER}-pip --query "ipAddress" -otsv)
+
+ssh $(whoami)@${PUBLIC_IP_ADDRESS}
 ```
 
 ## Provision the Kubernetes Control Plane
@@ -16,44 +20,43 @@ gcloud compute ssh controller-0
 
 Download the official Kubernetes release binaries:
 
-```
+```shell
 wget -q --show-progress --https-only --timestamping \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.7.4/bin/linux/amd64/kube-apiserver" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.7.4/bin/linux/amd64/kube-controller-manager" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.7.4/bin/linux/amd64/kube-scheduler" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.7.4/bin/linux/amd64/kubectl"
+  "https://storage.googleapis.com/kubernetes-release/release/v1.7.5/bin/linux/amd64/kube-apiserver" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.7.5/bin/linux/amd64/kube-controller-manager" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.7.5/bin/linux/amd64/kube-scheduler" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.7.5/bin/linux/amd64/kubectl"
 ```
 
 Install the Kubernetes binaries:
 
-```
+```shell
 chmod +x kube-apiserver kube-controller-manager kube-scheduler kubectl
 ```
 
-```
+```shell
 sudo mv kube-apiserver kube-controller-manager kube-scheduler kubectl /usr/local/bin/
 ```
 
 ### Configure the Kubernetes API Server
 
-```
+```shell
 sudo mkdir -p /var/lib/kubernetes/
 ```
 
-```
+```shell
 sudo mv ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem encryption-config.yaml /var/lib/kubernetes/
 ```
 
 The instance internal IP address will be used advertise the API Server to members of the cluster. Retrieve the internal IP address for the current compute instance:
 
-```
-INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" \
-  http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip)
+```shell
+INTERNAL_IP=$(ip addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
 ```
 
 Create the `kube-apiserver.service` systemd unit file:
 
-```
+```shell
 cat > kube-apiserver.service <<EOF
 [Unit]
 Description=Kubernetes API Server
@@ -104,7 +107,7 @@ EOF
 
 Create the `kube-controller-manager.service` systemd unit file:
 
-```
+```shell
 cat > kube-controller-manager.service <<EOF
 [Unit]
 Description=Kubernetes Controller Manager
@@ -135,7 +138,7 @@ EOF
 
 Create the `kube-scheduler.service` systemd unit file:
 
-```
+```shell
 cat > kube-scheduler.service <<EOF
 [Unit]
 Description=Kubernetes Scheduler
@@ -156,19 +159,19 @@ EOF
 
 ### Start the Controller Services
 
-```
+```shell
 sudo mv kube-apiserver.service kube-scheduler.service kube-controller-manager.service /etc/systemd/system/
 ```
 
-```
+```shell
 sudo systemctl daemon-reload
 ```
 
-```
+```shell
 sudo systemctl enable kube-apiserver kube-controller-manager kube-scheduler
 ```
 
-```
+```shell
 sudo systemctl start kube-apiserver kube-controller-manager kube-scheduler
 ```
 
@@ -176,16 +179,16 @@ sudo systemctl start kube-apiserver kube-controller-manager kube-scheduler
 
 ### Verification
 
-```
+```shell
 kubectl get componentstatuses
 ```
 
-```
+```shell
 NAME                 STATUS    MESSAGE              ERROR
-controller-manager   Healthy   ok                   
-scheduler            Healthy   ok                   
-etcd-2               Healthy   {"health": "true"}   
-etcd-0               Healthy   {"health": "true"}   
+controller-manager   Healthy   ok
+scheduler            Healthy   ok
+etcd-2               Healthy   {"health": "true"}
+etcd-0               Healthy   {"health": "true"}
 etcd-1               Healthy   {"health": "true"}
 ```
 
@@ -199,63 +202,52 @@ In this section you will provision an external load balancer to front the Kubern
 
 Create the external load balancer network resources:
 
-```
-gcloud compute http-health-checks create kube-apiserver-health-check \
-  --description "Kubernetes API Server Health Check" \
+```shell
+az network lb probe create -g kubernetes \
+  -n kubernetes-apiserver-check \
+  --lb-name kubernetes-lb \
+  --protocol http \
   --port 8080 \
-  --request-path /healthz
+  --path /healthz
 ```
 
-```
-gcloud compute target-pools create kubernetes-target-pool \
-  --http-health-check=kube-apiserver-health-check
-```
-
-```
-gcloud compute target-pools add-instances kubernetes-target-pool \
-  --instances controller-0,controller-1,controller-2
-```
-
-```
-KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
-  --region $(gcloud config get-value compute/region) \
-  --format 'value(name)')
-```
-
-```
-gcloud compute forwarding-rules create kubernetes-forwarding-rule \
-  --address ${KUBERNETES_PUBLIC_ADDRESS} \
-  --ports 6443 \
-  --region $(gcloud config get-value compute/region) \
-  --target-pool kubernetes-target-pool
+```shell
+az network lb rule create -g kubernetes \
+  -n kubernetes-apiserver-rule \
+  --protocol tcp \
+  --lb-name kubernetes-lb \
+  --frontend-ip-name LoadBalancerFrontEnd \
+  --frontend-port 6443 \
+  --backend-pool-name kubernetes-lb-pool \
+  --backend-port 6443 \
+  --probe-name kubernetes-apiserver-check
 ```
 
 ### Verification
 
 Retrieve the `kubernetes-the-hard-way` static IP address:
 
-```
-KUBERNETES_PUBLIC_IP_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
-  --region $(gcloud config get-value compute/region) \
-  --format 'value(address)')
+```shell
+KUBERNETES_PUBLIC_IP_ADDRESS=$(az network public-ip show -g kubernetes \
+  -n kubernetes-pip --query ipAddress -otsv)
 ```
 
 Make a HTTP request for the Kubernetes version info:
 
-```
+```shell
 curl --cacert ca.pem https://${KUBERNETES_PUBLIC_IP_ADDRESS}:6443/version
 ```
 
 > output
 
-```
+```shell
 {
   "major": "1",
   "minor": "7",
-  "gitVersion": "v1.7.4",
-  "gitCommit": "793658f2d7ca7f064d2bdf606519f9fe1229c381",
+  "gitVersion": "v1.7.5",
+  "gitCommit": "17d7182a7ccbb167074be7a87f0a68bd00d58d97",
   "gitTreeState": "clean",
-  "buildDate": "2017-08-17T08:30:51Z",
+  "buildDate": "2017-08-31T08:56:23Z",
   "goVersion": "go1.8.3",
   "compiler": "gc",
   "platform": "linux/amd64"

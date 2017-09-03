@@ -4,10 +4,29 @@ In this lab you will bootstrap three Kubernetes worker nodes. The following comp
 
 ## Prerequisites
 
-The commands in this lab must be run on each worker instance: `worker-0`, `worker-1`, and `worker-2`. Login to each worker instance using the `gcloud` command. Example:
+The commands in this lab must be run on each controller instance: `worker-0`, `worker-1`, and `worker-2`. 
+Azure Metadata Instace service cannot be used to set custom property. We have used *tags* on each worker VM to defined POD-CIDR used later.
 
+Retrieve the POD CIDR range for the current compute instance and keep it for later.
+
+```shell
+az vm show -g kubernetes --name worker-0 --query "tags" -o tsv
 ```
-gcloud compute ssh worker-0
+
+> output
+
+```shell
+10.200.0.0/24
+```
+
+Login to each worker instance using the `az` command to find its public IP and ssh to it. Example:
+
+```shell
+CONTROLLER="worker-0"
+PUBLIC_IP_ADDRESS=$(az network public-ip show -g kubernetes \
+  -n ${CONTROLLER}-pip --query "ipAddress" -otsv)
+
+ssh $(whoami)@${PUBLIC_IP_ADDRESS}
 ```
 
 ## Provisioning a Kubernetes Worker Node
@@ -16,35 +35,35 @@ gcloud compute ssh worker-0
 
 Add the `alexlarsson/flatpak` [PPA](https://launchpad.net/ubuntu/+ppas) which hosts the `libostree` package:
 
-```
+```shell
 sudo add-apt-repository -y ppa:alexlarsson/flatpak
 ```
 
-```
+```shell
 sudo apt-get update
 ```
 
 Install the OS dependencies required by the cri-o container runtime:
 
-```
+```shell
 sudo apt-get install -y socat libgpgme11 libostree-1-1
 ```
 
 ### Download and Install Worker Binaries
 
-```
+```shell
 wget -q --show-progress --https-only --timestamping \
   https://github.com/containernetworking/plugins/releases/download/v0.6.0/cni-plugins-amd64-v0.6.0.tgz \
   https://github.com/opencontainers/runc/releases/download/v1.0.0-rc4/runc.amd64 \
   https://storage.googleapis.com/kubernetes-the-hard-way/crio-amd64-v1.0.0-beta.0.tar.gz \
-  https://storage.googleapis.com/kubernetes-release/release/v1.7.4/bin/linux/amd64/kubectl \
-  https://storage.googleapis.com/kubernetes-release/release/v1.7.4/bin/linux/amd64/kube-proxy \
-  https://storage.googleapis.com/kubernetes-release/release/v1.7.4/bin/linux/amd64/kubelet
+  https://storage.googleapis.com/kubernetes-release/release/v1.7.5/bin/linux/amd64/kubectl \
+  https://storage.googleapis.com/kubernetes-release/release/v1.7.5/bin/linux/amd64/kube-proxy \
+  https://storage.googleapis.com/kubernetes-release/release/v1.7.5/bin/linux/amd64/kubelet
 ```
 
 Create the installation directories:
 
-```
+```shell
 sudo mkdir -p \
   /etc/containers \
   /etc/cni/net.d \
@@ -59,43 +78,36 @@ sudo mkdir -p \
 
 Install the worker binaries:
 
-```
+```shell
 sudo tar -xvf cni-plugins-amd64-v0.6.0.tgz -C /opt/cni/bin/
 ```
 
-```
+```shell
 tar -xvf crio-amd64-v1.0.0-beta.0.tar.gz
 ```
 
-```
+```shell
 chmod +x kubectl kube-proxy kubelet runc.amd64
 ```
 
-```
+```shell
 sudo mv runc.amd64 /usr/local/bin/runc
 ```
 
-```
+```shell
 sudo mv crio crioctl kpod kubectl kube-proxy kubelet /usr/local/bin/
 ```
 
-```
+```shell
 sudo mv conmon pause /usr/local/libexec/crio/
 ```
 
-
 ### Configure CNI Networking
 
-Retrieve the Pod CIDR range for the current compute instance:
+Create the `bridge` network configuration file replacing POD_CIDR with address retrieved initially from Azure VM tags:
 
-```
-POD_CIDR=$(curl -s -H "Metadata-Flavor: Google" \
-  http://metadata.google.internal/computeMetadata/v1/instance/attributes/pod-cidr)
-```
-
-Create the `bridge` network configuration file:
-
-```
+```shell
+POD_CIDR="10.200.0.0/24"
 cat > 10-bridge.conf <<EOF
 {
     "cniVersion": "0.3.1",
@@ -117,7 +129,7 @@ EOF
 
 Create the `loopback` network configuration file:
 
-```
+```shell
 cat > 99-loopback.conf <<EOF
 {
     "cniVersion": "0.3.1",
@@ -128,22 +140,21 @@ EOF
 
 Move the network configuration files to the CNI configuration directory:
 
-```
+```shell
 sudo mv 10-bridge.conf 99-loopback.conf /etc/cni/net.d/
 ```
 
-
 ### Configure the CRI-O Container Runtime
 
-```
+```shell
 sudo mv crio.conf seccomp.json /etc/crio/
 ```
 
-```
+```shell
 sudo mv policy.json /etc/containers/
 ```
 
-```
+```shell
 cat > crio.service <<EOF
 [Unit]
 Description=CRI-O daemon
@@ -161,21 +172,21 @@ EOF
 
 ### Configure the Kubelet
 
-```
+```shell
 sudo mv ${HOSTNAME}-key.pem ${HOSTNAME}.pem /var/lib/kubelet/
 ```
 
-```
+```shell
 sudo mv ${HOSTNAME}.kubeconfig /var/lib/kubelet/kubeconfig
 ```
 
-```
+```shell
 sudo mv ca.pem /var/lib/kubernetes/
 ```
 
 Create the `kubelet.service` systemd unit file:
 
-```
+```shell
 cat > kubelet.service <<EOF
 [Unit]
 Description=Kubernetes Kubelet
@@ -212,13 +223,13 @@ EOF
 
 ### Configure the Kubernetes Proxy
 
-```
+```shell
 sudo mv kube-proxy.kubeconfig /var/lib/kube-proxy/kubeconfig
 ```
 
 Create the `kube-proxy.service` systemd unit file:
 
-```
+```shell
 cat > kube-proxy.service <<EOF
 [Unit]
 Description=Kubernetes Kube Proxy
@@ -240,19 +251,19 @@ EOF
 
 ### Start the Worker Services
 
-```
+```shell
 sudo mv crio.service kubelet.service kube-proxy.service /etc/systemd/system/
 ```
 
-```
+```shell
 sudo systemctl daemon-reload
 ```
 
-```
+```shell
 sudo systemctl enable crio kubelet kube-proxy
 ```
 
-```
+```shell
 sudo systemctl start crio kubelet kube-proxy
 ```
 
@@ -262,23 +273,27 @@ sudo systemctl start crio kubelet kube-proxy
 
 Login to one of the controller nodes:
 
-```
-gcloud compute ssh controller-0
+```shell
+CONTROLLER="controller-0"
+PUBLIC_IP_ADDRESS=$(az network public-ip show -g kubernetes \
+  -n ${CONTROLLER}-pip --query "ipAddress" -otsv)
+
+ssh $(whoami)@${PUBLIC_IP_ADDRESS}
 ```
 
 List the registered Kubernetes nodes:
 
-```
+```shell
 kubectl get nodes
 ```
 
 > output
 
-```
+```shell
 NAME       STATUS    AGE       VERSION
-worker-0   Ready     5m        v1.7.4
-worker-1   Ready     3m        v1.7.4
-worker-2   Ready     7s        v1.7.4
+worker-0   Ready     5m        v1.7.5
+worker-1   Ready     3m        v1.7.5
+worker-2   Ready     7s        v1.7.5
 ```
 
 Next: [Configuring kubectl for Remote Access](10-configuring-kubectl.md)

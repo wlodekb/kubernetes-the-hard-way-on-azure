@@ -8,37 +8,41 @@ In this section you will verify the ability to [encrypt secret data at rest](htt
 
 Create a generic secret:
 
-```
+```shell
 kubectl create secret generic kubernetes-the-hard-way \
   --from-literal="mykey=mydata"
 ```
 
 Print a hexdump of the `kubernetes-the-hard-way` secret stored in etcd:
 
-```
-gcloud compute ssh controller-0 \
-  --command "ETCDCTL_API=3 etcdctl get /registry/secrets/default/kubernetes-the-hard-way | hexdump -C"
+```shell
+CONTROLLER="controller-0"
+PUBLIC_IP_ADDRESS=$(az network public-ip show -g kubernetes \
+  -n ${CONTROLLER}-pip --query "ipAddress" -otsv)
+
+ssh $(whoami)@${PUBLIC_IP_ADDRESS} \
+  "ETCDCTL_API=3 etcdctl get /registry/secrets/default/kubernetes-the-hard-way | hexdump -C"
 ```
 
 > output
 
-```
+```shell
 00000000  2f 72 65 67 69 73 74 72  79 2f 73 65 63 72 65 74  |/registry/secret|
 00000010  73 2f 64 65 66 61 75 6c  74 2f 6b 75 62 65 72 6e  |s/default/kubern|
 00000020  65 74 65 73 2d 74 68 65  2d 68 61 72 64 2d 77 61  |etes-the-hard-wa|
 00000030  79 0a 6b 38 73 3a 65 6e  63 3a 61 65 73 63 62 63  |y.k8s:enc:aescbc|
-00000040  3a 76 31 3a 6b 65 79 31  3a 70 88 d8 52 83 b7 96  |:v1:key1:p..R...|
-00000050  04 a3 bd 7e 42 9e 8a 77  2f 97 24 a7 68 3f c5 ec  |...~B..w/.$.h?..|
-00000060  9e f7 66 e8 a3 81 fc c8  3c df 63 71 33 0a 87 8f  |..f.....<.cq3...|
-00000070  0e c7 0a 0a f2 04 46 85  33 92 9a 4b 61 b2 10 c0  |......F.3..Ka...|
-00000080  0b 00 05 dd c3 c2 d0 6b  ff ff f2 32 3b e0 ec a0  |.......k...2;...|
-00000090  63 d3 8b 1c 29 84 88 71  a7 88 e2 26 4b 65 95 14  |c...)..q...&Ke..|
-000000a0  dc 8d 59 63 11 e5 f3 4e  b4 94 cc 3d 75 52 c7 07  |..Yc...N...=uR..|
-000000b0  73 f5 b4 b0 63 aa f9 9d  29 f8 d6 88 aa 33 c4 24  |s...c...)....3.$|
-000000c0  ac c6 71 2b 45 98 9e 5f  c6 a4 9d a2 26 3c 24 41  |..q+E.._....&<$A|
-000000d0  95 5b d3 2c 4b 1e 4a 47  c8 47 c8 f3 ac d6 e8 cb  |.[.,K.JG.G......|
-000000e0  5f a9 09 93 91 d7 5d c9  c2 68 f8 cf 3c 7e 3b a3  |_.....]..h..<~;.|
-000000f0  db d8 d5 9e 0c bf 2a 2f  58 0a                    |......*/X.|
+00000040  3a 76 31 3a 6b 65 79 31  3a 65 c3 db a8 fb ae 9b  |:v1:key1:e......|
+00000050  f9 09 59 0b 12 fa 4f 5d  4c 6c c5 35 28 d8 72 08  |..Y...O]Ll.5(.r.|
+00000060  f7 9e 4b 0a 6e 1d 6b 27  8f d2 7f 36 2b 11 6b 61  |..K.n.k'...6+.ka|
+00000070  53 6a a7 24 56 e2 19 ee  e7 04 94 ee b3 9c d3 c3  |Sj.$V...........|
+00000080  68 b5 b8 51 8b 01 4e d9  f0 ce 40 9a 73 5c 10 28  |h..Q..N...@.s\.(|
+00000090  18 bc ff 3a 51 4d bc 0c  6d 27 97 5c c6 bd a2 35  |...:QM..m'.\...5|
+000000a0  88 18 56 16 c7 10 12 a1  e2 cf c5 62 6c 50 7e 67  |..V........blP~g|
+000000b0  89 0c 42 56 73 69 48 bf  24 5e 91 91 56 2d 64 2f  |..BVsiH.$^..V-d/|
+000000c0  3a 35 b9 c9 08 41 d6 95  62 e8 1b 35 80 c9 8e 74  |:5...A..b..5...t|
+000000d0  79 34 bc 5b 7c 68 cd 0c  bc 11 21 c0 48 bc 92 a6  |y4.[|h....!.H...|
+000000e0  2f b5 ef 18 5c f1 00 16  19 22 e8 9c c1 8c 3c 35  |/...\...."....<5|
+000000f0  fa b3 87 51 85 bf f0 cd  0e 0a                    |...Q......|
 000000fa
 ```
 
@@ -50,19 +54,19 @@ In this section you will verify the ability to create and manage [Deployments](h
 
 Create a deployment for the [nginx](https://nginx.org/en/) web server:
 
-```
+```shell
 kubectl run nginx --image=nginx
 ```
 
 List the pod created by the `nginx` deployment:
 
-```
+```shell
 kubectl get pods -l run=nginx
 ```
 
 > output
 
-```
+```shell
 NAME                     READY     STATUS    RESTARTS   AGE
 nginx-4217019353-b5gzn   1/1       Running   0          15s
 ```
@@ -73,46 +77,46 @@ In this section you will verify the ability to access applications remotely usin
 
 Retrieve the full name of the `nginx` pod:
 
-```
+```shell
 POD_NAME=$(kubectl get pods -l run=nginx -o jsonpath="{.items[0].metadata.name}")
 ```
 
 Forward port `8080` on your local machine to port `80` of the `nginx` pod:
 
-```
+```shell
 kubectl port-forward $POD_NAME 8080:80
 ```
 
 > output
 
-```
+```shell
 Forwarding from 127.0.0.1:8080 -> 80
 Forwarding from [::1]:8080 -> 80
 ```
 
 In a new terminal make an HTTP request using the forwarding address:
 
-```
+```shell
 curl --head http://127.0.0.1:8080
 ```
 
 > output
 
-```
+```shell
 HTTP/1.1 200 OK
-Server: nginx/1.13.3
-Date: Thu, 31 Aug 2017 01:58:15 GMT
+Server: nginx/1.13.5
+Date: Fri, 08 Sep 2017 20:33:16 GMT
 Content-Type: text/html
 Content-Length: 612
-Last-Modified: Tue, 11 Jul 2017 13:06:07 GMT
+Last-Modified: Tue, 08 Aug 2017 15:25:00 GMT
 Connection: keep-alive
-ETag: "5964cd3f-264"
+ETag: "5989d7cc-264"
 Accept-Ranges: bytes
 ```
 
 Switch back to the previous terminal and stop the port forwarding to the `nginx` pod:
 
-```
+```shell
 Forwarding from 127.0.0.1:8080 -> 80
 Forwarding from [::1]:8080 -> 80
 Handling connection for 8080
@@ -125,14 +129,14 @@ In this section you will verify the ability to [retrieve container logs](https:/
 
 Print the `nginx` pod logs:
 
-```
+```shell
 kubectl logs $POD_NAME
 ```
 
 > output
 
-```
-127.0.0.1 - - [31/Aug/2017:01:58:15 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.54.0" "-"
+```shell
+127.0.0.1 - - [08/Sep/2017:20:33:16 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.54.0" "-"
 ```
 
 ### Exec
@@ -141,14 +145,14 @@ In this section you will verify the ability to [execute commands in a container]
 
 Print the nginx version by executing the `nginx -v` command in the `nginx` container:
 
-```
+```shell
 kubectl exec -ti $POD_NAME -- nginx -v
 ```
 
 > output
 
-```
-nginx version: nginx/1.13.3
+```shell
+nginx version: nginx/1.13.5
 ```
 
 ## Services
@@ -157,7 +161,7 @@ In this section you will verify the ability to expose applications using a [Serv
 
 Expose the `nginx` deployment using a [NodePort](https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport) service:
 
-```
+```shell
 kubectl expose deployment nginx --port 80 --type NodePort
 ```
 
@@ -165,43 +169,51 @@ kubectl expose deployment nginx --port 80 --type NodePort
 
 Retrieve the node port assigned to the `nginx` service:
 
-```
+```shell
 NODE_PORT=$(kubectl get svc nginx \
   --output=jsonpath='{range .spec.ports[0]}{.nodePort}')
 ```
 
 Create a firewall rule that allows remote access to the `nginx` node port:
 
-```
-gcloud compute firewall-rules create kubernetes-the-hard-way-allow-nginx-service \
-  --allow=tcp:${NODE_PORT} \
-  --network kubernetes-the-hard-way
+```shell
+az network nsg rule create -g kubernetes \
+  -n kubernetes-allow-nginx \
+  --access allow \
+  --destination-address-prefix '*' \
+  --destination-port-range ${NODE_PORT} \
+  --direction inbound \
+  --nsg-name kubernetes-nsg \
+  --protocol tcp \
+  --source-address-prefix '*' \
+  --source-port-range '*' \
+  --priority 1002
 ```
 
 Retrieve the external IP address of a worker instance:
 
-```
-EXTERNAL_IP=$(gcloud compute instances describe worker-0 \
-  --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
+```shell
+EXTERNAL_IP=$(az network public-ip show -g kubernetes \
+  -n worker-0-pip --query "ipAddress" -otsv)
 ```
 
 Make an HTTP request using the external IP address and the `nginx` node port:
 
-```
+```shell
 curl -I http://${EXTERNAL_IP}:${NODE_PORT}
 ```
 
 > output
 
-```
+```shell
 HTTP/1.1 200 OK
-Server: nginx/1.13.3
-Date: Thu, 31 Aug 2017 02:00:21 GMT
+Server: nginx/1.13.5
+Date: Fri, 08 Sep 2017 20:38:44 GMT
 Content-Type: text/html
 Content-Length: 612
-Last-Modified: Tue, 11 Jul 2017 13:06:07 GMT
+Last-Modified: Tue, 08 Aug 2017 15:25:00 GMT
 Connection: keep-alive
-ETag: "5964cd3f-264"
+ETag: "5989d7cc-264"
 Accept-Ranges: bytes
 ```
 

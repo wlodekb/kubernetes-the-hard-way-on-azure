@@ -1,6 +1,11 @@
-# Kubernetes The Hard Way
+# Kubernetes The Hard Way on Azure
 
-This tutorial walks you through setting up Kubernetes the hard way. This guide is not for people looking for a fully automated command to bring up a Kubernetes cluster. If that's you then check out [Google Container Engine](https://cloud.google.com/container-engine), or the [Getting Started Guides](http://kubernetes.io/docs/getting-started-guides/).
+This tutorial is designed for [Microsoft Azure](https://azure.microsoft.com) and [Azure CLI 2.0](https://github.com/azure/azure-cli).
+It is a fork of the great [Kubernets The Hard Way](https://github.com/kelseyhightower/kubernetes-the-hard-way) from [Kesley Hightower](https://twitter.com/kelseyhightower) that describes same steps using [Google Cloud Platform](https://cloud.google.com).
+
+Azure part is based on the superb translation done by [Jonathan Carter - @lostintangent](https://twitter.com/LostInTangent) in this [fork](https://github.com/lostintangent/kubernetes-the-hard-way). He is the real man behind the Azure "translation".
+
+This tutorial walks you through setting up Kubernetes the hard way. This guide is not for people looking for a fully automated command to bring up a Kubernetes cluster. If that's you then check out [Azure Container Services](https://azure.microsoft.com/en-us/services/container-service), or the [Getting Started Guides](http://kubernetes.io/docs/getting-started-guides).
 
 Kubernetes The Hard Way is optimized for learning, which means taking the long route to ensure you understand each task required to bootstrap a Kubernetes cluster.
 
@@ -14,14 +19,14 @@ The target audience for this tutorial is someone planning to support a productio
 
 Kubernetes The Hard Way guides you through bootstrapping a highly available Kubernetes cluster with end-to-end encryption between components and RBAC authentication.
 
-* [Kubernetes](https://github.com/kubernetes/kubernetes) 1.7.4
+* [Kubernetes](https://github.com/kubernetes/kubernetes) 1.7.5
 * [CRI-O Container Runtime](https://github.com/kubernetes-incubator/cri-o) v1.0.0-beta.0
 * [CNI Container Networking](https://github.com/containernetworking/cni) v0.6.0
-* [etcd](https://github.com/coreos/etcd) 3.2.6
+* [etcd](https://github.com/coreos/etcd) 3.2.7
 
 ## Labs
 
-This tutorial assumes you have access to the [Google Cloud Platform](https://cloud.google.com). While GCP is used for basic infrastructure requirements the lessons learned in this tutorial can be applied to other platforms.
+This tutorial assumes you have access to the [Microsoft Azure](https://azure.microsoft.com). While Azure is used for basic infrastructure requirements the lessons learned in this tutorial can be applied to other platforms.
 
 * [Prerequisites](docs/01-prerequisites.md)
 * [Installing the Client Tools](docs/02-client-tools.md)

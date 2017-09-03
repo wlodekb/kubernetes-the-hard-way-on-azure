@@ -14,10 +14,9 @@ Each kubeconfig requires a Kubernetes API Server to connect to. To support high 
 
 Retrieve the `kubernetes-the-hard-way` static IP address:
 
-```
-KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
-  --region $(gcloud config get-value compute/region) \
-  --format 'value(address)')
+```shell
+KUBERNETES_PUBLIC_ADDRESS=$(az network public-ip show -g kubernetes \
+  -n kubernetes-pip --query "ipAddress" -otsv)
 ```
 
 ### The kubelet Kubernetes Configuration File
@@ -26,7 +25,7 @@ When generating kubeconfig files for Kubelets the client certificate matching th
 
 Generate a kubeconfig file for each worker node:
 
-```
+```shell
 for instance in worker-0 worker-1 worker-2; do
   kubectl config set-cluster kubernetes-the-hard-way \
     --certificate-authority=ca.pem \
@@ -51,7 +50,7 @@ done
 
 Results:
 
-```
+```shell
 worker-0.kubeconfig
 worker-1.kubeconfig
 worker-2.kubeconfig
@@ -61,7 +60,7 @@ worker-2.kubeconfig
 
 Generate a kubeconfig file for the `kube-proxy` service:
 
-```
+```shell
 kubectl config set-cluster kubernetes-the-hard-way \
   --certificate-authority=ca.pem \
   --embed-certs=true \
@@ -69,7 +68,7 @@ kubectl config set-cluster kubernetes-the-hard-way \
   --kubeconfig=kube-proxy.kubeconfig
 ```
 
-```
+```shell
 kubectl config set-credentials kube-proxy \
   --client-certificate=kube-proxy.pem \
   --client-key=kube-proxy-key.pem \
@@ -77,14 +76,14 @@ kubectl config set-credentials kube-proxy \
   --kubeconfig=kube-proxy.kubeconfig
 ```
 
-```
+```shell
 kubectl config set-context default \
   --cluster=kubernetes-the-hard-way \
   --user=kube-proxy \
   --kubeconfig=kube-proxy.kubeconfig
 ```
 
-```
+```shell
 kubectl config use-context default --kubeconfig=kube-proxy.kubeconfig
 ```
 
@@ -92,9 +91,12 @@ kubectl config use-context default --kubeconfig=kube-proxy.kubeconfig
 
 Copy the appropriate `kubelet` and `kube-proxy` kubeconfig files to each worker instance:
 
-```
+```shell
 for instance in worker-0 worker-1 worker-2; do
-  gcloud compute scp ${instance}.kubeconfig kube-proxy.kubeconfig ${instance}:~/
+  PUBLIC_IP_ADDRESS=$(az network public-ip show -g kubernetes \
+    -n ${instance}-pip --query "ipAddress" -otsv)
+
+  scp ${instance}.kubeconfig kube-proxy.kubeconfig $(whoami)@${PUBLIC_IP_ADDRESS}:~/
 done
 ```
 
