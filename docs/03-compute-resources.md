@@ -19,7 +19,7 @@ Create the `kubernetes-vnet` custom VNet network with a subnet `kubernetes` prov
 ```shell
 az network vnet create -g kubernetes \
   -n kubernetes-vnet \
-  --address-prefix 10.240.0.0/16 \
+  --address-prefix 10.240.0.0/24 \
   --subnet-name kubernetes-subnet
 ```
 
@@ -117,7 +117,7 @@ kubernetes       westus2   Static        XX.XXX.XXX.XXX
 
 ## Virtual Machines
 
-The compute instances in this lab will be provisioned using [Ubuntu Server](https://www.ubuntu.com/server) 16.04, which has good support for the [CRI-O container runtime](https://github.com/kubernetes-incubator/cri-o). Each compute instance will be provisioned with a fixed private IP address to simplify the Kubernetes bootstrapping process.
+The compute instances in this lab will be provisioned using [Ubuntu Server](https://www.ubuntu.com/server) 16.04, which has good support for the [cri-containerd container runtime](https://github.com/kubernetes-incubator/cri-containerd). Each compute instance will be provisioned with a fixed private IP address to simplify the Kubernetes bootstrapping process.
 
 ### Kubernetes Controllers
 

@@ -22,10 +22,10 @@ Download the official Kubernetes release binaries:
 
 ```shell
 wget -q --show-progress --https-only --timestamping \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.7.5/bin/linux/amd64/kube-apiserver" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.7.5/bin/linux/amd64/kube-controller-manager" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.7.5/bin/linux/amd64/kube-scheduler" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.7.5/bin/linux/amd64/kubectl"
+  "https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/linux/amd64/kube-apiserver" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/linux/amd64/kube-controller-manager" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/linux/amd64/kube-scheduler" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/linux/amd64/kubectl"
 ```
 
 Install the Kubernetes binaries:
@@ -64,7 +64,7 @@ Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 
 [Service]
 ExecStart=/usr/local/bin/kube-apiserver \\
-  --admission-control=NamespaceLifecycle,NodeRestriction,LimitRanger,ServiceAccount,DefaultStorageClass,ResourceQuota \\
+  --admission-control=Initializers,NamespaceLifecycle,NodeRestriction,LimitRanger,ServiceAccount,DefaultStorageClass,ResourceQuota \\
   --advertise-address=${INTERNAL_IP} \\
   --allow-privileged=true \\
   --apiserver-count=3 \\
@@ -82,12 +82,12 @@ ExecStart=/usr/local/bin/kube-apiserver \\
   --etcd-servers=https://10.240.0.10:2379,https://10.240.0.11:2379,https://10.240.0.12:2379 \\
   --event-ttl=1h \\
   --experimental-encryption-provider-config=/var/lib/kubernetes/encryption-config.yaml \\
-  --insecure-bind-address=0.0.0.0 \\
+  --insecure-bind-address=127.0.0.1 \\
   --kubelet-certificate-authority=/var/lib/kubernetes/ca.pem \\
   --kubelet-client-certificate=/var/lib/kubernetes/kubernetes.pem \\
   --kubelet-client-key=/var/lib/kubernetes/kubernetes-key.pem \\
   --kubelet-https=true \\
-  --runtime-config=rbac.authorization.k8s.io/v1alpha1 \\
+  --runtime-config=api/all \\
   --service-account-key-file=/var/lib/kubernetes/ca-key.pem \\
   --service-cluster-ip-range=10.32.0.0/24 \\
   --service-node-port-range=30000-32767 \\
@@ -121,10 +121,10 @@ ExecStart=/usr/local/bin/kube-controller-manager \\
   --cluster-signing-cert-file=/var/lib/kubernetes/ca.pem \\
   --cluster-signing-key-file=/var/lib/kubernetes/ca-key.pem \\
   --leader-elect=true \\
-  --master=http://${INTERNAL_IP}:8080 \\
+  --master=http://127.0.0.1:8080 \\
   --root-ca-file=/var/lib/kubernetes/ca.pem \\
   --service-account-private-key-file=/var/lib/kubernetes/ca-key.pem \\
-  --service-cluster-ip-range=10.32.0.0/16 \\
+  --service-cluster-ip-range=10.32.0.0/24 \\
   --v=2
 Restart=on-failure
 RestartSec=5
@@ -147,7 +147,7 @@ Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 [Service]
 ExecStart=/usr/local/bin/kube-scheduler \\
   --leader-elect=true \\
-  --master=http://${INTERNAL_IP}:8080 \\
+  --master=http://127.0.0.1:8080 \\
   --v=2
 Restart=on-failure
 RestartSec=5
@@ -194,6 +194,68 @@ etcd-1               Healthy   {"health": "true"}
 
 > Remember to run the above commands on each controller node: `controller-0`, `controller-1`, and `controller-2`.
 
+## RBAC for Kubelet Authorization
+
+In this section you will configure RBAC permissions to allow the Kubernetes API Server to access the Kubelet API on each worker node. Access to the Kubelet API is required for retrieving metrics, logs, and executing commands in pods.
+
+> This tutorial sets the Kubelet `--authorization-mode` flag to `Webhook`. Webhook mode uses the [SubjectAccessReview](https://kubernetes.io/docs/admin/authorization/#checking-api-access) API to determine authorization.
+
+```shell
+CONTROLLER="controller-0"
+PUBLIC_IP_ADDRESS=$(az network public-ip show -g kubernetes \
+  -n ${CONTROLLER}-pip --query "ipAddress" -otsv)
+
+ssh $(whoami)@${PUBLIC_IP_ADDRESS}
+```
+
+Create the `system:kube-apiserver-to-kubelet` [ClusterRole](https://kubernetes.io/docs/admin/authorization/rbac/#role-and-clusterrole) with permissions to access the Kubelet API and perform most common tasks associated with managing pods:
+
+```shell
+cat <<EOF | kubectl apply -f -
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  annotations:
+    rbac.authorization.kubernetes.io/autoupdate: "true"
+  labels:
+    kubernetes.io/bootstrapping: rbac-defaults
+  name: system:kube-apiserver-to-kubelet
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - nodes/proxy
+      - nodes/stats
+      - nodes/log
+      - nodes/spec
+      - nodes/metrics
+    verbs:
+      - "*"
+EOF
+```
+
+The Kubernetes API Server authenticates to the Kubelet as the `kubernetes` user using the client certificate as defined by the `--kubelet-client-certificate` flag.
+
+Bind the `system:kube-apiserver-to-kubelet` ClusterRole to the `kubernetes` user:
+
+```shell
+cat <<EOF | kubectl apply -f -
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: system:kube-apiserver
+  namespace: ""
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:kube-apiserver-to-kubelet
+subjects:
+  - apiGroup: rbac.authorization.k8s.io
+    kind: User
+    name: kubernetes
+EOF
+```
+
 ## The Kubernetes Frontend Load Balancer
 
 In this section you will provision an external load balancer to front the Kubernetes API Servers. The `kubernetes-the-hard-way` static IP address will be attached to the resulting load balancer.
@@ -203,15 +265,6 @@ In this section you will provision an external load balancer to front the Kubern
 Create the external load balancer network resources:
 
 ```shell
-az network lb probe create -g kubernetes \
-  -n kubernetes-apiserver-check \
-  --lb-name kubernetes-lb \
-  --protocol http \
-  --port 8080 \
-  --path /healthz
-```
-
-```shell
 az network lb rule create -g kubernetes \
   -n kubernetes-apiserver-rule \
   --protocol tcp \
@@ -219,8 +272,7 @@ az network lb rule create -g kubernetes \
   --frontend-ip-name LoadBalancerFrontEnd \
   --frontend-port 6443 \
   --backend-pool-name kubernetes-lb-pool \
-  --backend-port 6443 \
-  --probe-name kubernetes-apiserver-check
+  --backend-port 6443
 ```
 
 ### Verification
@@ -243,11 +295,11 @@ curl --cacert ca.pem https://${KUBERNETES_PUBLIC_IP_ADDRESS}:6443/version
 ```shell
 {
   "major": "1",
-  "minor": "7",
-  "gitVersion": "v1.7.5",
-  "gitCommit": "17d7182a7ccbb167074be7a87f0a68bd00d58d97",
+  "minor": "8",
+  "gitVersion": "v1.8.0",
+  "gitCommit": "6e937839ac04a38cac63e6a7a306c5d035fe7b0a",
   "gitTreeState": "clean",
-  "buildDate": "2017-08-31T08:56:23Z",
+  "buildDate": "2017-09-28T22:46:41Z",
   "goVersion": "go1.8.3",
   "compiler": "gc",
   "platform": "linux/amd64"

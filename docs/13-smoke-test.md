@@ -105,7 +105,7 @@ curl --head http://127.0.0.1:8080
 ```shell
 HTTP/1.1 200 OK
 Server: nginx/1.13.5
-Date: Fri, 08 Sep 2017 20:33:16 GMT
+Date: Mon, 02 Oct 2017 20:59:33 GMT
 Content-Type: text/html
 Content-Length: 612
 Last-Modified: Tue, 08 Aug 2017 15:25:00 GMT
@@ -136,7 +136,7 @@ kubectl logs $POD_NAME
 > output
 
 ```shell
-127.0.0.1 - - [08/Sep/2017:20:33:16 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.54.0" "-"
+127.0.0.1 - - [02/Oct/2017:01:04:20 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.54.0" "-"
 ```
 
 ### Exec
@@ -208,7 +208,7 @@ curl -I http://${EXTERNAL_IP}:${NODE_PORT}
 ```shell
 HTTP/1.1 200 OK
 Server: nginx/1.13.5
-Date: Fri, 08 Sep 2017 20:38:44 GMT
+Date: Mon, 02 Oct 2017 01:06:11 GMT
 Content-Type: text/html
 Content-Length: 612
 Last-Modified: Tue, 08 Aug 2017 15:25:00 GMT

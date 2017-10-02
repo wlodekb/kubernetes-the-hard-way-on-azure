@@ -11,21 +11,16 @@ Download and install `cfssl` and `cfssljson` from the [cfssl repository](https:/
 ### OS X
 
 ```shell
-wget -q --show-progress --https-only --timestamping \
-  https://pkg.cfssl.org/R1.2/cfssl_darwin-amd64 \
-  https://pkg.cfssl.org/R1.2/cfssljson_darwin-amd64
+curl -o cfssl https://pkg.cfssl.org/R1.2/cfssl_darwin-amd64
+curl -o cfssljson https://pkg.cfssl.org/R1.2/cfssljson_darwin-amd64
 ```
 
 ```shell
-chmod +x cfssl_darwin-amd64 cfssljson_darwin-amd64
+chmod +x cfssl cfssljson
 ```
 
 ```shell
-sudo mv cfssl_darwin-amd64 /usr/local/bin/cfssl
-```
-
-```shell
-sudo mv cfssljson_darwin-amd64 /usr/local/bin/cfssljson
+sudo mv cfssl cfssljson /usr/local/bin/
 ```
 
 ### Linux
@@ -85,7 +80,7 @@ The `kubectl` command line utility is used to interact with the Kubernetes API S
 ### OS X
 
 ```shell
-wget https://storage.googleapis.com/kubernetes-release/release/v1.7.5/bin/darwin/amd64/kubectl
+curl -o kubectl https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/darwin/amd64/kubectl
 ```
 
 ```shell
@@ -99,7 +94,7 @@ sudo mv kubectl /usr/local/bin/
 ### Linux
 
 ```shell
-wget https://storage.googleapis.com/kubernetes-release/release/v1.7.5/bin/linux/amd64/kubectl
+wget https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/linux/amd64/kubectl
 ```
 
 ```shell
@@ -112,7 +107,7 @@ sudo mv kubectl /usr/local/bin/
 
 ### Verification
 
-Verify `kubectl` version 1.7.5 or higher is installed:
+Verify `kubectl` version 1.8.0 or higher is installed:
 
 ```shell
 kubectl version --client
@@ -121,7 +116,7 @@ kubectl version --client
 > output
 
 ```shell
-Client Version: version.Info{Major:"1", Minor:"7", GitVersion:"v1.7.5", GitCommit:"17d7182a7ccbb167074be7a87f0a68bd00d58d97", GitTreeState:"clean", BuildDate:"2017-09-02T18:55:00Z", GoVersion:"go1.9", Compiler:"gc", Platform:"darwin/amd64"}
+Client Version: version.Info{Major:"1", Minor:"8", GitVersion:"v1.8.0", GitCommit:"6e937839ac04a38cac63e6a7a306c5d035fe7b0a", GitTreeState:"clean", BuildDate:"2017-09-28T22:57:57Z", GoVersion:"go1.9", Compiler:"gc", Platform:"darwin/amd64"}
 ```
 
 Next: [Provisioning Compute Resources](03-compute-resources.md)
