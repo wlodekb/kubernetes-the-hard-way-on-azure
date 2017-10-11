@@ -167,10 +167,9 @@ worker-2.pem
 Create the `kube-proxy` client certificate signing request:
 
 ```shell
-for instance in worker-0 worker-1 worker-2; do
-cat > ${instance}-csr.json <<EOF
+cat > kube-proxy-csr.json <<EOF
 {
-  "CN": "system:node:${instance}",
+  "CN": "system:kube-proxy",
   "key": {
     "algo": "rsa",
     "size": 2048
@@ -179,27 +178,13 @@ cat > ${instance}-csr.json <<EOF
     {
       "C": "US",
       "L": "Portland",
-      "O": "system:nodes",
+      "O": "system:node-proxier",
       "OU": "Kubernetes The Hard Way",
       "ST": "Oregon"
     }
   ]
 }
 EOF
-
-EXTERNAL_IP=$(az network public-ip show -g kubernetes \
-  -n kubernetes-pip --query ipAddress -otsv)
-
-INTERNAL_IP=$(az vm show -d -n ${instance} -g kubernetes --query privateIps -otsv)
-
-cfssl gencert \
-  -ca=ca.pem \
-  -ca-key=ca-key.pem \
-  -config=ca-config.json \
-  -hostname=${instance},${EXTERNAL_IP},${INTERNAL_IP} \
-  -profile=kubernetes \
-  ${instance}-csr.json | cfssljson -bare ${instance}
-done
 ```
 
 Generate the `kube-proxy` client certificate and private key:
