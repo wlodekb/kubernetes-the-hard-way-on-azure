@@ -42,6 +42,19 @@ sudo mv cfssl_linux-amd64 /usr/local/bin/cfssl
 ```shell
 sudo mv cfssljson_linux-amd64 /usr/local/bin/cfssljson
 ```
+### Windows
+Download your version of cfss_windows-386.exe or cfssl_windows-amd64.exe
+For windows on 32 bit use powershell, using administrative rights
+```shell
+PS C:\Windows\system32>Invoke-WebRequest -Uri https://pkg.cfssl.org/R1.2/cfssl_windows-386.exe -OutFile cfssl.exe
+PS C:\Windows\system32>Invoke-WebRequest -Uri https://pkg.cfssl.org/R1.2/cfssljson_windows-386.exe -OutFile cfssjson.exe
+```
+For windows on 64 bit use powershell, using administrative rights
+```shell
+PS C:\Windows\system32>Invoke-WebRequest -Uri https://pkg.cfssl.org/R1.2/cfssl_windows-amd64.exe -OutFile cfssl.exe
+PS C:\Windows\system32>Invoke-WebRequest -Uri https://pkg.cfssl.org/R1.2/mkbundle_windows-amd64.exe -OutFile cfssljson.exe
+```
+
 
 ### Verification
 
@@ -103,6 +116,12 @@ chmod +x kubectl
 
 ```shell
 sudo mv kubectl /usr/local/bin/
+```
+
+### Windows
+Note you need to have chocolately package manager installed first (https://chocolatey.org/)
+```shell
+PS C:\Windows\system32>choco install kubernetes-cli
 ```
 
 ### Verification
