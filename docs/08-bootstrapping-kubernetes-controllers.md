@@ -22,10 +22,10 @@ Download the official Kubernetes release binaries:
 
 ```shell
 wget -q --show-progress --https-only --timestamping \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/linux/amd64/kube-apiserver" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/linux/amd64/kube-controller-manager" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/linux/amd64/kube-scheduler" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/linux/amd64/kubectl"
+  "https://storage.googleapis.com/kubernetes-release/release/v1.9.4/bin/linux/amd64/kube-apiserver" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.9.4/bin/linux/amd64/kube-controller-manager" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.9.4/bin/linux/amd64/kube-scheduler" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.9.4/bin/linux/amd64/kubectl"
 ```
 
 Install the Kubernetes binaries:
@@ -295,12 +295,12 @@ curl --cacert ca.pem https://${KUBERNETES_PUBLIC_IP_ADDRESS}:6443/version
 ```shell
 {
   "major": "1",
-  "minor": "8",
-  "gitVersion": "v1.8.0",
-  "gitCommit": "6e937839ac04a38cac63e6a7a306c5d035fe7b0a",
+  "minor": "9",
+  "gitVersion": "v1.9.4",
+  "gitCommit": "bee2d1505c4fe820744d26d41ecd3fdd4a3d6546",
   "gitTreeState": "clean",
-  "buildDate": "2017-09-28T22:46:41Z",
-  "goVersion": "go1.8.3",
+  "buildDate": "2018-03-12T16:21:35Z",
+  "goVersion": "go1.9.3",
   "compiler": "gc",
   "platform": "linux/amd64"
 }
