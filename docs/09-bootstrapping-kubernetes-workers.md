@@ -22,9 +22,9 @@ az vm show -g kubernetes --name worker-0 --query "tags" -o tsv
 Login to each worker instance using the `az` command to find its public IP and ssh to it. Example:
 
 ```shell
-CONTROLLER="worker-0"
+WORKER="worker-0"
 PUBLIC_IP_ADDRESS=$(az network public-ip show -g kubernetes \
-  -n ${CONTROLLER}-pip --query "ipAddress" -otsv)
+  -n ${WORKER}-pip --query "ipAddress" -otsv)
 
 ssh $(whoami)@${PUBLIC_IP_ADDRESS}
 ```
