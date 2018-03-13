@@ -83,9 +83,11 @@ sudo mv kubectl kube-proxy kubelet /usr/local/bin/
 ### Configure CNI Networking
 
 Create the `bridge` network configuration file replacing POD_CIDR with address retrieved initially from Azure VM tags:
+(Note: The Azure Metadata Instance Service is used to retrieve the POD_CIDR tag for each worker.
+https://github.com/MicrosoftDocs/azure-docs/blob/master/articles/virtual-machines/windows/instance-metadata-service.md)
 
 ```shell
-POD_CIDR="10.200.0.0/24"
+POD_CIDR="$(echo $(curl --silent -H Metadata:true "http://169.254.169.254/metadata/instance/compute/tags?api-version=2017-08-01&format=text") | cut -d : -f2)"
 cat > 10-bridge.conf <<EOF
 {
     "cniVersion": "0.3.1",
@@ -244,9 +246,9 @@ kubectl get nodes
 
 ```shell
 NAME       STATUS    AGE       VERSION
-worker-0   Ready     5m        v1.8.0
-worker-1   Ready     3m        v1.8.0
-worker-2   Ready     7s        v1.8.0
+worker-0   Ready     5m        v1.9.4
+worker-1   Ready     3m        v1.9.4
+worker-2   Ready     7s        v1.9.4
 ```
 
 Next: [Configuring kubectl for Remote Access](10-configuring-kubectl.md)
