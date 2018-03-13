@@ -93,7 +93,7 @@ The `kubectl` command line utility is used to interact with the Kubernetes API S
 ### OS X
 
 ```shell
-curl -o kubectl https://storage.googleapis.com/kubernetes-release/release/v1.9.3/bin/darwin/amd64/kubectl
+curl -o kubectl https://storage.googleapis.com/kubernetes-release/release/v1.9.4/bin/darwin/amd64/kubectl
 ```
 
 ```shell
@@ -107,7 +107,7 @@ sudo mv kubectl /usr/local/bin/
 ### Linux
 
 ```shell
-wget https://storage.googleapis.com/kubernetes-release/release/v1.9.3/bin/linux/amd64/kubectl
+wget https://storage.googleapis.com/kubernetes-release/release/v1.9.4/bin/linux/amd64/kubectl
 ```
 
 ```shell
@@ -126,7 +126,7 @@ PS C:\Windows\system32>choco install kubernetes-cli
 
 ### Verification
 
-Verify `kubectl` version 1.9.3 or higher is installed:
+Verify `kubectl` version 1.9.4 or higher is installed:
 
 ```shell
 kubectl version --client
@@ -135,7 +135,7 @@ kubectl version --client
 > output
 
 ```shell
-Client Version: version.Info{Major:"1", Minor:"9", GitVersion:"v1.9.3", GitCommit:"d2835416544f298c919e2ead3be3d0864b52323b", GitTreeState:"clean", BuildDate:"2018-02-09T21:51:54Z", GoVersion:"go1.9.4", Compiler:"gc", Platform:"darwin/amd64"}
+Client Version: version.Info{Major:"1", Minor:"9", GitVersion:"v1.9.4", GitCommit:"bee2d1505c4fe820744d26d41ecd3fdd4a3d6546", GitTreeState:"clean", BuildDate:"2018-03-12T16:29:47Z", GoVersion:"go1.9.4", Compiler:"gc", Platform:"darwin/amd64"}
 ```
 
 Next: [Provisioning Compute Resources](03-compute-resources.md)
