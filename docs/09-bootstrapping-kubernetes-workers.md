@@ -22,9 +22,9 @@ az vm show -g kubernetes --name worker-0 --query "tags" -o tsv
 Login to each worker instance using the `az` command to find its public IP and ssh to it. Example:
 
 ```shell
-CONTROLLER="worker-0"
+WORKER="worker-0"
 PUBLIC_IP_ADDRESS=$(az network public-ip show -g kubernetes \
-  -n ${CONTROLLER}-pip --query "ipAddress" -otsv)
+  -n ${WORKER}-pip --query "ipAddress" -otsv)
 
 ssh $(whoami)@${PUBLIC_IP_ADDRESS}
 ```
@@ -43,11 +43,11 @@ sudo apt-get -y install socat
 
 ```shell
 wget -q --show-progress --https-only --timestamping \
-  https://github.com/containernetworking/plugins/releases/download/v0.6.0/cni-plugins-amd64-v0.6.0.tgz \
-  https://github.com/kubernetes-incubator/cri-containerd/releases/download/v1.0.0-alpha.0/cri-containerd-1.0.0-alpha.0.tar.gz \
-  https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/linux/amd64/kubectl \
-  https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/linux/amd64/kube-proxy \
-  https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/linux/amd64/kubelet
+  https://github.com/containernetworking/plugins/releases/download/v0.7.0/cni-plugins-amd64-v0.7.0.tgz \
+  https://github.com/containerd/cri/releases/download/v1.0.0-beta.1/cri-containerd-1.0.0-beta.1.linux-amd64.tar.gz \
+  https://storage.googleapis.com/kubernetes-release/release/v1.9.4/bin/linux/amd64/kubectl \
+  https://storage.googleapis.com/kubernetes-release/release/v1.9.4/bin/linux/amd64/kube-proxy \
+  https://storage.googleapis.com/kubernetes-release/release/v1.9.4/bin/linux/amd64/kubelet
 ```
 
 Create the installation directories:
@@ -83,9 +83,11 @@ sudo mv kubectl kube-proxy kubelet /usr/local/bin/
 ### Configure CNI Networking
 
 Create the `bridge` network configuration file replacing POD_CIDR with address retrieved initially from Azure VM tags:
+(Note: The Azure Metadata Instance Service is used to retrieve the POD_CIDR tag for each worker.
+https://github.com/MicrosoftDocs/azure-docs/blob/master/articles/virtual-machines/windows/instance-metadata-service.md)
 
 ```shell
-POD_CIDR="10.200.0.0/24"
+POD_CIDR="$(echo $(curl --silent -H Metadata:true "http://169.254.169.254/metadata/instance/compute/tags?api-version=2017-08-01&format=text") | cut -d : -f2)"
 cat > 10-bridge.conf <<EOF
 {
     "cniVersion": "0.3.1",
@@ -244,9 +246,9 @@ kubectl get nodes
 
 ```shell
 NAME       STATUS    AGE       VERSION
-worker-0   Ready     5m        v1.8.0
-worker-1   Ready     3m        v1.8.0
-worker-2   Ready     7s        v1.8.0
+worker-0   Ready     5m        v1.9.4
+worker-1   Ready     3m        v1.9.4
+worker-2   Ready     7s        v1.9.4
 ```
 
 Next: [Configuring kubectl for Remote Access](10-configuring-kubectl.md)
