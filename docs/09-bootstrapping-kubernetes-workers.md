@@ -65,7 +65,7 @@ sudo mkdir -p \
 Install the worker binaries:
 
 ```shell
-sudo tar -xvf cni-plugins-amd64-v0.6.0.tgz -C /opt/cni/bin/
+sudo tar -xvf cni-plugins-amd64-v0.7.0.tgz -C /opt/cni/bin/
 ```
 
 ```shell
