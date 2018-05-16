@@ -69,7 +69,7 @@ sudo tar -xvf cni-plugins-amd64-v0.7.0.tgz -C /opt/cni/bin/
 ```
 
 ```shell
-sudo tar -xvf cri-containerd-1.0.0-alpha.0.tar.gz -C /
+sudo tar -xvf cri-containerd-1.0.0-beta.1.linux-amd64.tar.gz -C /
 ```
 
 ```shell
