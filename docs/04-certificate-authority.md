@@ -259,6 +259,7 @@ kubernetes.pem
 ```
 
 ## Distribute the Client and Server Certificates
+##instead of whoami use the username used to create the linux VM
 
 Copy the appropriate certificates and private keys to each worker instance:
 

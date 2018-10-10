@@ -119,6 +119,10 @@ kubernetes       westus2   Static        XX.XXX.XXX.XXX
 
 The compute instances in this lab will be provisioned using [Ubuntu Server](https://www.ubuntu.com/server) 16.04, which has good support for the [cri-containerd container runtime](https://github.com/kubernetes-incubator/cri-containerd). Each compute instance will be provisioned with a fixed private IP address to simplify the Kubernetes bootstrapping process.
 
+To select latest stable Ubuntu Server release run following command
+az vm image list --location westus2 --publisher Canonical --offer UbuntuServer --all
+
+
 ### Kubernetes Controllers
 
 Create three compute instances which will host the Kubernetes control plane in `controller-as` [Availability Set](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/regions-and-availability#availability-sets):
