@@ -52,7 +52,7 @@ PS C:\Windows\system32>Invoke-WebRequest -Uri https://pkg.cfssl.org/R1.2/cfssljs
 For windows on 64 bit use powershell, using administrative rights
 ```shell
 PS C:\Windows\system32>Invoke-WebRequest -Uri https://pkg.cfssl.org/R1.2/cfssl_windows-amd64.exe -OutFile cfssl.exe
-PS C:\Windows\system32>Invoke-WebRequest -Uri https://pkg.cfssl.org/R1.2/mkbundle_windows-amd64.exe -OutFile cfssljson.exe
+PS C:\Windows\system32>Invoke-WebRequest -Uri https://pkg.cfssl.org/R1.2/cfssljson_windows-amd64.exe -OutFile cfssljson.exe
 ```
 
 
