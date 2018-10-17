@@ -4,7 +4,7 @@ In this lab you will bootstrap three Kubernetes worker nodes. The following comp
 
 ## Prerequisites
 
-The commands in this lab must be run on each controller instance: `worker-0`, `worker-1`, and `worker-2`. 
+The commands in this lab must be run on each worker instance: `worker-0`, `worker-1`, and `worker-2`. 
 Azure Metadata Instace service cannot be used to set custom property. We have used *tags* on each worker VM to defined POD-CIDR used later.
 
 Retrieve the POD CIDR range for the current compute instance and keep it for later.
