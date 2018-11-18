@@ -38,32 +38,26 @@ kube-dns-3097350089-q64qc   3/3       Running   0          20s
 Create a `busybox` deployment:
 
 ```shell
-kubectl run busybox --image=busybox --command -- sleep 3600
+kubectl create -f https://k8s.io/examples/admin/dns/busybox.yaml
 ```
 
 List the pod created by the `busybox` deployment:
 
 ```shell
-kubectl get pods -l run=busybox
+kubectl get pods/busybox
 ```
 
 > output
 
 ```shell
 NAME                       READY     STATUS    RESTARTS   AGE
-busybox-2125412808-mt2vb   1/1       Running   0          15s
-```
-
-Retrieve the full name of the `busybox` pod:
-
-```shell
-POD_NAME=$(kubectl get pods -l run=busybox -o jsonpath="{.items[0].metadata.name}")
+busybox                    1/1       Running   0          15s
 ```
 
 Execute a DNS lookup for the `kubernetes` service inside the `busybox` pod:
 
 ```shell
-kubectl exec -ti $POD_NAME -- nslookup kubernetes
+kubectl exec -ti busybox -- nslookup kubernetes.default
 ```
 
 > output
