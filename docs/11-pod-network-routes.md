@@ -8,12 +8,12 @@ In this lab you will create a route for each worker node that maps the node's Po
 
 ## The Routing Table
 
-In this section you will gather the information required to create routes in the `kubernetes-vnet` Virtual Network.
+In this section you will gather the information required to create routes in the kubernetes-vnet.
 
 Print the internal IP address and Pod CIDR range for each worker instance:
 
 ```shell
-for instance in worker-0; do
+for instance in worker-0 worker-1 worker-2; do
   PRIVATE_IP_ADDRESS=$(az vm show -d -g kubernetes -n ${instance} --query "privateIps" -otsv)
   POD_CIDR=$(az vm show -g kubernetes --name ${instance} --query "tags" -o tsv)
   echo $PRIVATE_IP_ADDRESS $POD_CIDR
@@ -24,6 +24,8 @@ done
 
 ```shell
 10.240.0.20 10.200.0.0/24
+10.240.0.21 10.200.1.0/24
+10.240.0.22 10.200.2.0/24
 ```
 
 ## Routes
@@ -42,7 +44,7 @@ az network vnet subnet update -g kubernetes \
 ```
 
 ```shell
-for i in 0; do
+for i in 0 1 2; do
 az network route-table route create -g kubernetes \
   -n kubernetes-route-10-200-${i}-0-24 \
   --route-table-name kubernetes-routes \
@@ -52,7 +54,7 @@ az network route-table route create -g kubernetes \
 done
 ```
 
-List the routes in the `kubernetes-vnet` VPC network:
+List the routes in the `kubernetes-vnet`:
 
 ```shell
 az network route-table route list -g kubernetes --route-table-name kubernetes-routes -o table
@@ -64,6 +66,8 @@ az network route-table route list -g kubernetes --route-table-name kubernetes-ro
 AddressPrefix    Name                            NextHopIpAddress    NextHopType       ProvisioningState    ResourceGroup
 ---------------  ------------------------------  ------------------  ----------------  -------------------  ---------------
 10.200.0.0/24    kubernetes-route-10-200-0-0-24  10.240.0.20         VirtualAppliance  Succeeded            kubernetes
+10.200.1.0/24    kubernetes-route-10-200-1-0-24  10.240.0.21         VirtualAppliance  Succeeded            kubernetes
+10.200.2.0/24    kubernetes-route-10-200-2-0-24  10.240.0.22         VirtualAppliance  Succeeded            kubernetes
 ```
 
 Next: [Deploying the DNS Cluster Add-on](12-dns-addon.md)
