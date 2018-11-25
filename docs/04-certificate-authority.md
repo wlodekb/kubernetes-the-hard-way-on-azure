@@ -162,7 +162,50 @@ worker-2-key.pem
 worker-2.pem
 ```
 
-### The kube-proxy Client Certificate
+### The Controller Manager Client Certificate
+
+Generate the `kube-controller-manager` client certificate and private key:
+
+```shell
+{
+
+cat > kube-controller-manager-csr.json <<EOF
+{
+  "CN": "system:kube-controller-manager",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "US",
+      "L": "Portland",
+      "O": "system:kube-controller-manager",
+      "OU": "Kubernetes The Hard Way",
+      "ST": "Oregon"
+    }
+  ]
+}
+EOF
+
+cfssl gencert \
+  -ca=ca.pem \
+  -ca-key=ca-key.pem \
+  -config=ca-config.json \
+  -profile=kubernetes \
+  kube-controller-manager-csr.json | cfssljson -bare kube-controller-manager
+
+}
+```
+
+Results:
+
+```shell
+kube-controller-manager-key.pem
+kube-controller-manager.pem
+```
+
+### The Kube Proxy Client Certificate
 
 Create the `kube-proxy` client certificate signing request:
 
@@ -203,6 +246,49 @@ Results:
 ```shell
 kube-proxy-key.pem
 kube-proxy.pem
+```
+
+### The Scheduler Client Certificate
+
+Generate the `kube-scheduler` client certificate and private key:
+
+```shell
+{
+
+cat > kube-scheduler-csr.json <<EOF
+{
+  "CN": "system:kube-scheduler",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "US",
+      "L": "Portland",
+      "O": "system:kube-scheduler",
+      "OU": "Kubernetes The Hard Way",
+      "ST": "Oregon"
+    }
+  ]
+}
+EOF
+
+cfssl gencert \
+  -ca=ca.pem \
+  -ca-key=ca-key.pem \
+  -config=ca-config.json \
+  -profile=kubernetes \
+  kube-scheduler-csr.json | cfssljson -bare kube-scheduler
+
+}
+```
+
+Results:
+
+```shell
+kube-scheduler-key.pem
+kube-scheduler.pem
 ```
 
 ### The Kubernetes API Server Certificate
@@ -258,6 +344,51 @@ kubernetes-key.pem
 kubernetes.pem
 ```
 
+## The Service Account Key Pair
+
+The Kubernetes Controller Manager leverages a key pair to generate and sign service account tokens as describe in the [managing service accounts](https://kubernetes.io/docs/admin/service-accounts-admin/) documentation.
+
+Generate the `service-account` certificate and private key:
+
+```shell
+{
+
+cat > service-account-csr.json <<EOF
+{
+  "CN": "service-accounts",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "US",
+      "L": "Portland",
+      "O": "Kubernetes",
+      "OU": "Kubernetes The Hard Way",
+      "ST": "Oregon"
+    }
+  ]
+}
+EOF
+
+cfssl gencert \
+  -ca=ca.pem \
+  -ca-key=ca-key.pem \
+  -config=ca-config.json \
+  -profile=kubernetes \
+  service-account-csr.json | cfssljson -bare service-account
+
+}
+```
+
+Results:
+
+```shell
+service-account-key.pem
+service-account.pem
+```
+
 ## Distribute the Client and Server Certificates
 ##instead of whoami use the username used to create the linux VM
 
@@ -283,6 +414,6 @@ for instance in controller-0 controller-1 controller-2; do
 done
 ```
 
-> The `kube-proxy` and `kubelet` client certificates will be used to generate client authentication configuration files in the next lab.
+> The `kube-proxy`, `kube-controller-manager`, `kube-scheduler`, and `kubelet` client certificates will be used to generate client authentication configuration files in the next lab.
 
 Next: [Generating Kubernetes Configuration Files for Authentication](05-kubernetes-configuration-files.md)

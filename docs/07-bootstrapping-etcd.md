@@ -22,27 +22,25 @@ Download the official etcd release binaries from the [coreos/etcd](https://githu
 
 ```shell
 wget -q --show-progress --https-only --timestamping \
-  "https://github.com/coreos/etcd/releases/download/v3.3.2/etcd-v3.3.2-linux-amd64.tar.gz"
+  "https://github.com/coreos/etcd/releases/download/v3.3.5/etcd-v3.3.5-linux-amd64.tar.gz"
 ```
 
 Extract and install the `etcd` server and the `etcdctl` command line utility:
 
 ```shell
-tar -xvf etcd-v3.3.2-linux-amd64.tar.gz
-```
-
-```shell
-sudo mv etcd-v3.3.2-linux-amd64/etcd* /usr/local/bin/
+{
+  tar -xvf etcd-v3.3.5-linux-amd64.tar.gz
+  sudo mv etcd-v3.3.5-linux-amd64/etcd* /usr/local/bin/
+}
 ```
 
 ### Configure the etcd Server
 
 ```shell
-sudo mkdir -p /etc/etcd /var/lib/etcd
-```
-
-```shell
-sudo cp ca.pem kubernetes-key.pem kubernetes.pem /etc/etcd/
+{
+  sudo mkdir -p /etc/etcd /var/lib/etcd
+  sudo cp ca.pem kubernetes-key.pem kubernetes.pem /etc/etcd/
+}
 ```
 
 The instance internal IP address will be used to serve client requests and communicate with etcd cluster peers. Retrieve the internal IP address for the current compute instance:
@@ -99,15 +97,11 @@ sudo mv etcd.service /etc/systemd/system/
 ```
 
 ```shell
-sudo systemctl daemon-reload
-```
-
-```shell
-sudo systemctl enable etcd
-```
-
-```shell
-sudo systemctl start etcd
+{
+  sudo systemctl daemon-reload
+  sudo systemctl enable etcd
+  sudo systemctl start etcd
+}
 ```
 
 > Remember to run the above commands on each controller node: `controller-0`, `controller-1`, and `controller-2`.
@@ -117,7 +111,11 @@ sudo systemctl start etcd
 List the etcd cluster members:
 
 ```shell
-ETCDCTL_API=3 etcdctl member list
+sudo ETCDCTL_API=3 etcdctl member list \
+  --endpoints=https://127.0.0.1:2379 \
+  --cacert=/etc/etcd/ca.pem \
+  --cert=/etc/etcd/kubernetes.pem \
+  --key=/etc/etcd/kubernetes-key.pem
 ```
 
 > output

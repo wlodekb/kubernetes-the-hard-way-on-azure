@@ -29,6 +29,10 @@ PUBLIC_IP_ADDRESS=$(az network public-ip show -g kubernetes \
 ssh $(whoami)@${PUBLIC_IP_ADDRESS}
 ```
 
+### Running commands in parallel with tmux
+
+[tmux](https://github.com/tmux/tmux/wiki) can be used to run commands on multiple compute instances at the same time. See the [Running commands in parallel with tmux](01-prerequisites.md#running-commands-in-parallel-with-tmux) section in the Prerequisites lab.
+
 ## Provisioning a Kubernetes Worker Node
 
 Install the OS dependencies:
@@ -43,11 +47,14 @@ sudo apt-get -y install socat
 
 ```shell
 wget -q --show-progress --https-only --timestamping \
-  https://github.com/containernetworking/plugins/releases/download/v0.7.0/cni-plugins-amd64-v0.7.0.tgz \
-  https://github.com/containerd/cri/releases/download/v1.0.0-beta.1/cri-containerd-1.0.0-beta.1.linux-amd64.tar.gz \
-  https://storage.googleapis.com/kubernetes-release/release/v1.9.4/bin/linux/amd64/kubectl \
-  https://storage.googleapis.com/kubernetes-release/release/v1.9.4/bin/linux/amd64/kube-proxy \
-  https://storage.googleapis.com/kubernetes-release/release/v1.9.4/bin/linux/amd64/kubelet
+  https://github.com/kubernetes-incubator/cri-tools/releases/download/v1.0.0-beta.0/crictl-v1.0.0-beta.0-linux-amd64.tar.gz \
+  https://storage.googleapis.com/kubernetes-the-hard-way/runsc \
+  https://github.com/opencontainers/runc/releases/download/v1.0.0-rc5/runc.amd64 \
+  https://github.com/containernetworking/plugins/releases/download/v0.6.0/cni-plugins-amd64-v0.6.0.tgz \
+  https://github.com/containerd/containerd/releases/download/v1.1.0/containerd-1.1.0.linux-amd64.tar.gz \
+  https://storage.googleapis.com/kubernetes-release/release/v1.10.2/bin/linux/amd64/kubectl \
+  https://storage.googleapis.com/kubernetes-release/release/v1.10.2/bin/linux/amd64/kube-proxy \
+  https://storage.googleapis.com/kubernetes-release/release/v1.10.2/bin/linux/amd64/kubelet
 ```
 
 Create the installation directories:
@@ -65,19 +72,14 @@ sudo mkdir -p \
 Install the worker binaries:
 
 ```shell
-sudo tar -xvf cni-plugins-amd64-v0.7.0.tgz -C /opt/cni/bin/
-```
-
-```shell
-sudo tar -xvf cri-containerd-1.0.0-beta.1.linux-amd64.tar.gz -C /
-```
-
-```shell
-chmod +x kubectl kube-proxy kubelet
-```
-
-```shell
-sudo mv kubectl kube-proxy kubelet /usr/local/bin/
+{
+  chmod +x kubectl kube-proxy kubelet runc.amd64 runsc
+  sudo mv runc.amd64 runc
+  sudo mv kubectl kube-proxy kubelet runc runsc /usr/local/bin/
+  sudo tar -xvf crictl-v1.0.0-beta.0-linux-amd64.tar.gz -C /usr/local/bin/
+  sudo tar -xvf cni-plugins-amd64-v0.6.0.tgz -C /opt/cni/bin/
+  sudo tar -xvf containerd-1.1.0.linux-amd64.tar.gz -C /
+}
 ```
 
 ### Configure CNI Networking
@@ -118,55 +120,112 @@ cat > 99-loopback.conf <<EOF
 EOF
 ```
 
-Move the network configuration files to the CNI configuration directory:
+### Configure containerd
+
+Create the `containerd` configuration file:
 
 ```shell
-sudo mv 10-bridge.conf 99-loopback.conf /etc/cni/net.d/
+sudo mkdir -p /etc/containerd/
+```
+
+```shell
+cat << EOF | sudo tee /etc/containerd/config.toml
+[plugins]
+  [plugins.cri.containerd]
+    snapshotter = "overlayfs"
+    [plugins.cri.containerd.default_runtime]
+      runtime_type = "io.containerd.runtime.v1.linux"
+      runtime_engine = "/usr/local/bin/runc"
+      runtime_root = ""
+    [plugins.cri.containerd.untrusted_workload_runtime]
+      runtime_type = "io.containerd.runtime.v1.linux"
+      runtime_engine = "/usr/local/bin/runsc"
+      runtime_root = "/run/containerd/runsc"
+EOF
+```
+
+> Untrusted workloads will be run using the gVisor (runsc) runtime.
+
+Create the `containerd.service` systemd unit file:
+
+```shell
+cat <<EOF | sudo tee /etc/systemd/system/containerd.service
+[Unit]
+Description=containerd container runtime
+Documentation=https://containerd.io
+After=network.target
+
+[Service]
+ExecStartPre=/sbin/modprobe overlay
+ExecStart=/bin/containerd
+Restart=always
+RestartSec=5
+Delegate=yes
+KillMode=process
+OOMScoreAdjust=-999
+LimitNOFILE=1048576
+LimitNPROC=infinity
+LimitCORE=infinity
+
+[Install]
+WantedBy=multi-user.target
+EOF
 ```
 
 ### Configure the Kubelet
 
 ```shell
-sudo mv ${HOSTNAME}-key.pem ${HOSTNAME}.pem /var/lib/kubelet/
+{
+  sudo mv ${HOSTNAME}-key.pem ${HOSTNAME}.pem /var/lib/kubelet/
+  sudo mv ${HOSTNAME}.kubeconfig /var/lib/kubelet/kubeconfig
+  sudo mv ca.pem /var/lib/kubernetes/
+}
 ```
 
-```shell
-sudo mv ${HOSTNAME}.kubeconfig /var/lib/kubelet/kubeconfig
-```
+Create the `kubelet-config.yaml` configuration file:
 
 ```shell
-sudo mv ca.pem /var/lib/kubernetes/
+cat <<EOF | sudo tee /var/lib/kubelet/kubelet-config.yaml
+kind: KubeletConfiguration
+apiVersion: kubelet.config.k8s.io/v1beta1
+authentication:
+  anonymous:
+    enabled: false
+  webhook:
+    enabled: true
+  x509:
+    clientCAFile: "/var/lib/kubernetes/ca.pem"
+authorization:
+  mode: Webhook
+clusterDomain: "cluster.local"
+clusterDNS:
+  - "10.32.0.10"
+podCIDR: "${POD_CIDR}"
+runtimeRequestTimeout: "15m"
+tlsCertFile: "/var/lib/kubelet/${HOSTNAME}.pem"
+tlsPrivateKeyFile: "/var/lib/kubelet/${HOSTNAME}-key.pem"
+EOF
 ```
 
 Create the `kubelet.service` systemd unit file:
 
 ```shell
-cat > kubelet.service <<EOF
+cat <<EOF | sudo tee /etc/systemd/system/kubelet.service
 [Unit]
 Description=Kubernetes Kubelet
-Documentation=https://github.com/GoogleCloudPlatform/kubernetes
-After=cri-containerd.service
-Requires=cri-containerd.service
+Documentation=https://github.com/kubernetes/kubernetes
+After=containerd.service
+Requires=containerd.service
 
 [Service]
 ExecStart=/usr/local/bin/kubelet \\
-  --allow-privileged=true \\
-  --anonymous-auth=false \\
-  --authorization-mode=Webhook \\
-  --client-ca-file=/var/lib/kubernetes/ca.pem \\
-  --cluster-dns=10.32.0.10 \\
-  --cluster-domain=cluster.local \\
+  --config=/var/lib/kubelet/kubelet-config.yaml \\
   --container-runtime=remote \\
-  --container-runtime-endpoint=unix:///var/run/cri-containerd.sock \\
+  --container-runtime-endpoint=unix:///var/run/containerd/containerd.sock \\
   --image-pull-progress-deadline=2m \\
   --kubeconfig=/var/lib/kubelet/kubeconfig \\
   --network-plugin=cni \\
-  --pod-cidr=${POD_CIDR} \\
   --register-node=true \\
-  --require-kubeconfig \\
-  --runtime-request-timeout=15m \\
-  --tls-cert-file=/var/lib/kubelet/${HOSTNAME}.pem \\
-  --tls-private-key-file=/var/lib/kubelet/${HOSTNAME}-key.pem \\
   --v=2
 Restart=on-failure
 RestartSec=5
@@ -182,20 +241,30 @@ EOF
 sudo mv kube-proxy.kubeconfig /var/lib/kube-proxy/kubeconfig
 ```
 
+Create the `kube-proxy-config.yaml` configuration file:
+
+```shell
+cat <<EOF | sudo tee /var/lib/kube-proxy/kube-proxy-config.yaml
+kind: KubeProxyConfiguration
+apiVersion: kubeproxy.config.k8s.io/v1alpha1
+clientConnection:
+  kubeconfig: "/var/lib/kube-proxy/kubeconfig"
+mode: "iptables"
+clusterCIDR: "10.200.0.0/16"
+EOF
+```
+
 Create the `kube-proxy.service` systemd unit file:
 
 ```shell
-cat > kube-proxy.service <<EOF
+cat <<EOF | sudo tee /etc/systemd/system/kube-proxy.service
 [Unit]
 Description=Kubernetes Kube Proxy
-Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+Documentation=https://github.com/kubernetes/kubernetes
 
 [Service]
 ExecStart=/usr/local/bin/kube-proxy \\
-  --cluster-cidr=10.200.0.0/16 \\
-  --kubeconfig=/var/lib/kube-proxy/kubeconfig \\
-  --proxy-mode=iptables \\
-  --v=2
+  --config=/var/lib/kube-proxy/kube-proxy-config.yaml
 Restart=on-failure
 RestartSec=5
 
@@ -207,19 +276,11 @@ EOF
 ### Start the Worker Services
 
 ```shell
-sudo mv kubelet.service kube-proxy.service /etc/systemd/system/
-```
-
-```shell
-sudo systemctl daemon-reload
-```
-
-```shell
-sudo systemctl enable containerd cri-containerd kubelet kube-proxy
-```
-
-```shell
-sudo systemctl start containerd cri-containerd kubelet kube-proxy
+{
+  sudo systemctl daemon-reload
+  sudo systemctl enable containerd kubelet kube-proxy
+  sudo systemctl start containerd kubelet kube-proxy
+}
 ```
 
 > Remember to run the above commands on each worker node: `worker-0`, `worker-1`, and `worker-2`.
@@ -246,9 +307,9 @@ kubectl get nodes
 
 ```shell
 NAME       STATUS    AGE       VERSION
-worker-0   Ready     5m        v1.9.4
-worker-1   Ready     3m        v1.9.4
-worker-2   Ready     7s        v1.9.4
+worker-0   Ready     5m        v1.10.2
+worker-1   Ready     3m        v1.10.2
+worker-2   Ready     7s        v1.10.2
 ```
 
 Next: [Configuring kubectl for Remote Access](10-configuring-kubectl.md)

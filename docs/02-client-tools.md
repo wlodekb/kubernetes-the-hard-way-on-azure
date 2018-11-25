@@ -23,6 +23,12 @@ chmod +x cfssl cfssljson
 sudo mv cfssl cfssljson /usr/local/bin/
 ```
 
+Some OS X users may experience problems using the pre-built binaries in which case [Homebrew](https://brew.sh) might be a better option:
+
+```
+brew install cfssl
+```
+
 ### Linux
 
 ```shell
@@ -42,6 +48,7 @@ sudo mv cfssl_linux-amd64 /usr/local/bin/cfssl
 ```shell
 sudo mv cfssljson_linux-amd64 /usr/local/bin/cfssljson
 ```
+
 ### Windows
 Download your version of cfss_windows-386.exe or cfssl_windows-amd64.exe
 For windows on 32 bit use powershell, using administrative rights
@@ -93,7 +100,7 @@ The `kubectl` command line utility is used to interact with the Kubernetes API S
 ### OS X
 
 ```shell
-curl -o kubectl https://storage.googleapis.com/kubernetes-release/release/v1.9.4/bin/darwin/amd64/kubectl
+curl -o kubectl https://storage.googleapis.com/kubernetes-release/release/v1.10.2/bin/darwin/amd64/kubectl
 ```
 
 ```shell
@@ -107,7 +114,7 @@ sudo mv kubectl /usr/local/bin/
 ### Linux
 
 ```shell
-wget https://storage.googleapis.com/kubernetes-release/release/v1.9.4/bin/linux/amd64/kubectl
+wget https://storage.googleapis.com/kubernetes-release/release/v1.10.2/bin/linux/amd64/kubectl
 ```
 
 ```shell
@@ -120,13 +127,14 @@ sudo mv kubectl /usr/local/bin/
 
 ### Windows
 Note you need to have chocolately package manager installed first (https://chocolatey.org/)
+
 ```shell
 PS C:\Windows\system32>choco install kubernetes-cli
 ```
 
 ### Verification
 
-Verify `kubectl` version 1.9.4 or higher is installed:
+Verify `kubectl` version 1.10.2 or higher is installed:
 
 ```shell
 kubectl version --client
@@ -135,7 +143,7 @@ kubectl version --client
 > output
 
 ```shell
-Client Version: version.Info{Major:"1", Minor:"9", GitVersion:"v1.9.4", GitCommit:"bee2d1505c4fe820744d26d41ecd3fdd4a3d6546", GitTreeState:"clean", BuildDate:"2018-03-12T16:29:47Z", GoVersion:"go1.9.4", Compiler:"gc", Platform:"darwin/amd64"}
+Client Version: version.Info{Major:"1", Minor:"10", GitVersion:"v1.10.2", GitCommit:"81753b10df112992bf51bbc2c2f85208aad78335", GitTreeState:"clean", BuildDate:"2018-04-27T09:22:21Z", GoVersion:"go1.9.4", Compiler:"gc", Platform:"linux/amd64"}
 ```
 
 Next: [Provisioning Compute Resources](03-compute-resources.md)
