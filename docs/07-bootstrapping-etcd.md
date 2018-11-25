@@ -22,15 +22,15 @@ Download the official etcd release binaries from the [coreos/etcd](https://githu
 
 ```shell
 wget -q --show-progress --https-only --timestamping \
-  "https://github.com/coreos/etcd/releases/download/v3.3.5/etcd-v3.3.5-linux-amd64.tar.gz"
+  "https://github.com/coreos/etcd/releases/download/v3.3.9/etcd-v3.3.9-linux-amd64.tar.gz"
 ```
 
 Extract and install the `etcd` server and the `etcdctl` command line utility:
 
 ```shell
 {
-  tar -xvf etcd-v3.3.5-linux-amd64.tar.gz
-  sudo mv etcd-v3.3.5-linux-amd64/etcd* /usr/local/bin/
+  tar -xvf etcd-v3.3.9-linux-amd64.tar.gz
+  sudo mv etcd-v3.3.9-linux-amd64/etcd* /usr/local/bin/
 }
 ```
 
@@ -100,7 +100,7 @@ sudo mv etcd.service /etc/systemd/system/
 {
   sudo systemctl daemon-reload
   sudo systemctl enable etcd
-  sudo systemctl start etcd
+  ps -ef | grep apiserver
 }
 ```
 
@@ -112,7 +112,7 @@ List the etcd cluster members:
 
 ```shell
 sudo ETCDCTL_API=3 etcdctl member list \
-  --endpoints=https://127.0.0.1:2379 \
+  --endpoints=https://${INTERNAL_IP}:2379 \
   --cacert=/etc/etcd/ca.pem \
   --cert=/etc/etcd/kubernetes.pem \
   --key=/etc/etcd/kubernetes-key.pem
