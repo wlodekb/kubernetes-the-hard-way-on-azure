@@ -94,7 +94,7 @@ https://github.com/MicrosoftDocs/azure-docs/blob/master/articles/virtual-machine
 
 ```shell
 POD_CIDR="$(echo $(curl --silent -H Metadata:true "http://169.254.169.254/metadata/instance/compute/tags?api-version=2017-08-01&format=text") | cut -d : -f2)"
-cat > 10-bridge.conf <<EOF
+cat <<EOF | sudo tee /etc/cni/net.d/10-bridge.conf
 {
     "cniVersion": "0.3.1",
     "name": "bridge",
@@ -116,7 +116,7 @@ EOF
 Create the `loopback` network configuration file:
 
 ```shell
-cat > 99-loopback.conf <<EOF
+cat <<EOF | sudo tee /etc/cni/net.d/99-loopback.conf
 {
     "cniVersion": "0.3.1",
     "type": "loopback"
