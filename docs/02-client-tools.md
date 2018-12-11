@@ -54,7 +54,7 @@ Download your version of cfss_windows-386.exe or cfssl_windows-amd64.exe
 For windows on 32 bit use powershell, using administrative rights
 ```shell
 PS C:\Windows\system32>Invoke-WebRequest -Uri https://pkg.cfssl.org/R1.2/cfssl_windows-386.exe -OutFile cfssl.exe
-PS C:\Windows\system32>Invoke-WebRequest -Uri https://pkg.cfssl.org/R1.2/cfssljson_windows-386.exe -OutFile cfssjson.exe
+PS C:\Windows\system32>Invoke-WebRequest -Uri https://pkg.cfssl.org/R1.2/cfssljson_windows-386.exe -OutFile cfssljson.exe
 ```
 For windows on 64 bit use powershell, using administrative rights
 ```shell
