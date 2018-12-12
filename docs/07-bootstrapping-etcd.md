@@ -100,7 +100,7 @@ sudo mv etcd.service /etc/systemd/system/
 {
   sudo systemctl daemon-reload
   sudo systemctl enable etcd
-  ps -ef | grep apiserver
+  sudo systemctl start etcd
 }
 ```
 
