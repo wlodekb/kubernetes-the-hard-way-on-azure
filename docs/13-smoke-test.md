@@ -55,7 +55,7 @@ In this section you will verify the ability to create and manage [Deployments](h
 Create a deployment for the [nginx](https://nginx.org/en/) web server:
 
 ```shell
-kubectl run nginx --image=nginx
+kubectl run --generator=run-pod/v1 nginx --image=nginx
 ```
 
 List the pod created by the `nginx` deployment:
@@ -68,7 +68,7 @@ kubectl get pods -l run=nginx
 
 ```shell
 NAME                     READY     STATUS    RESTARTS   AGE
-nginx-4217019353-b5gzn   1/1       Running   0          15s
+nginx                    1/1       Running   0          15s
 ```
 
 ### Port Forwarding
@@ -104,13 +104,13 @@ curl --head http://127.0.0.1:8080
 
 ```shell
 HTTP/1.1 200 OK
-Server: nginx/1.13.5
-Date: Mon, 02 Oct 2017 20:59:33 GMT
+Server: nginx/1.15.7
+Date: Sun, 23 Dec 2018 17:09:02 GMT
 Content-Type: text/html
 Content-Length: 612
-Last-Modified: Tue, 08 Aug 2017 15:25:00 GMT
+Last-Modified: Tue, 27 Nov 2018 12:31:56 GMT
 Connection: keep-alive
-ETag: "5989d7cc-264"
+ETag: "5bfd393c-264"
 Accept-Ranges: bytes
 ```
 
@@ -136,7 +136,7 @@ kubectl logs $POD_NAME
 > output
 
 ```shell
-127.0.0.1 - - [02/Oct/2017:01:04:20 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.54.0" "-"
+127.0.0.1 - - [23/Dec/2018:17:09:02 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.54.0" "-"
 ```
 
 ### Exec
@@ -152,7 +152,7 @@ kubectl exec -ti $POD_NAME -- nginx -v
 > output
 
 ```shell
-nginx version: nginx/1.13.5
+nginx version: nginx/1.15.7
 ```
 
 ## Services
@@ -207,13 +207,13 @@ curl -I http://${EXTERNAL_IP}:${NODE_PORT}
 
 ```shell
 HTTP/1.1 200 OK
-Server: nginx/1.13.5
-Date: Mon, 02 Oct 2017 01:06:11 GMT
+Server: nginx/1.15.7
+Date: Sun, 23 Dec 2018 17:11:08 GMT
 Content-Type: text/html
 Content-Length: 612
-Last-Modified: Tue, 08 Aug 2017 15:25:00 GMT
+Last-Modified: Tue, 27 Nov 2018 12:31:56 GMT
 Connection: keep-alive
-ETag: "5989d7cc-264"
+ETag: "5bfd393c-264"
 Accept-Ranges: bytes
 ```
 

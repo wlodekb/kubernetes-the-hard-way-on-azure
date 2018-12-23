@@ -119,9 +119,15 @@ kubernetes       westus2   Static        XX.XXX.XXX.XXX
 
 The compute instances in this lab will be provisioned using [Ubuntu Server](https://www.ubuntu.com/server) 18.04, which has good support for the [cri-containerd container runtime](https://github.com/kubernetes-incubator/cri-containerd). Each compute instance will be provisioned with a fixed private IP address to simplify the Kubernetes bootstrapping process.
 
-To select latest stable Ubuntu Server release run following command
-az vm image list --location westus2 --publisher Canonical --offer UbuntuServer --all
+To select latest stable Ubuntu Server release run following command and replace UBUNTULTS variable below with latest row in the table.
 
+```shell
+az vm image list --location westus2 --publisher Canonical --offer UbuntuServer --sku 18.04-LTS --all -o table
+```
+
+```shell
+UBUNTULTS="Canonical:UbuntuServer:18.04-LTS:18.04.201812060"
+```
 
 ### Kubernetes Controllers
 
@@ -150,7 +156,7 @@ for i in 0 1 2; do
     echo "[Controller ${i}] Creating VM..."
     az vm create -g kubernetes \
         -n controller-${i} \
-        --image UbuntuLTS \
+        --image ${UBUNTULTS} \
         --generate-ssh-keys \
         --nics controller-${i}-nic \
         --availability-set controller-as \
@@ -187,7 +193,7 @@ for i in 0 1 2; do
     echo "[Worker ${i}] Creating VM..."
     az vm create -g kubernetes \
         -n worker-${i} \
-        --image UbuntuLTS \
+        --image ${UBUNTULTS} \
         --nics worker-${i}-nic \
         --tags pod-cidr=10.200.${i}.0/24 \
         --availability-set worker-as \

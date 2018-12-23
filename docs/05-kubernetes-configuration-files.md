@@ -124,7 +124,6 @@ Results:
 kube-controller-manager.kubeconfig
 ```
 
-
 ### The kube-scheduler Kubernetes Configuration File
 
 Generate a kubeconfig file for the `kube-scheduler` service:
