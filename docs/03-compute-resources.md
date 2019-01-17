@@ -160,7 +160,8 @@ for i in 0 1 2; do
         --generate-ssh-keys \
         --nics controller-${i}-nic \
         --availability-set controller-as \
-        --nsg '' > /dev/null
+        --nsg '' \
+        --admin-username 'kuberoot' > /dev/null
 done
 ```
 
