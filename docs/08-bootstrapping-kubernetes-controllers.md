@@ -288,6 +288,15 @@ In this section you will provision an external load balancer to front the Kubern
 
 > The compute instances created in this tutorial will not have permission to complete this section. Run the following commands from the same machine used to create the compute instances.
 
+Create the load balancer health probe as a pre-requesite for the lb rule that follows.
+```shell
+az network lb probe create -g kubernetes \ 
+  --lb-name kubernetes-lb \
+  --name kubernetes-apiserver-probe \
+  --port 6443 \
+  --protocol tcp
+```
+
 Create the external load balancer network resources:
 
 ```shell
@@ -298,7 +307,8 @@ az network lb rule create -g kubernetes \
   --frontend-ip-name LoadBalancerFrontEnd \
   --frontend-port 6443 \
   --backend-pool-name kubernetes-lb-pool \
-  --backend-port 6443
+  --backend-port 6443 \
+  --probe-name kubernetes-apiserver-probe
 ```
 
 ### Verification
