@@ -126,7 +126,7 @@ az vm image list --location westus2 --publisher Canonical --offer UbuntuServer -
 ```
 
 ```shell
-UBUNTULTS="Canonical:UbuntuServer:18.04-LTS:18.04.201812060"
+UBUNTULTS="Canonical:UbuntuServer:18.04-LTS:18.04.201904170"
 ```
 
 ### Kubernetes Controllers
