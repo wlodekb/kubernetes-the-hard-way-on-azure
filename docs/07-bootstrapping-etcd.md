@@ -11,7 +11,7 @@ CONTROLLER="controller-0"
 PUBLIC_IP_ADDRESS=$(az network public-ip show -g kubernetes \
   -n ${CONTROLLER}-pip --query "ipAddress" -otsv)
 
-ssh $(whoami)@${PUBLIC_IP_ADDRESS}
+ssh kuberoot@${PUBLIC_IP_ADDRESS}
 ```
 
 ## Bootstrapping an etcd Cluster Member

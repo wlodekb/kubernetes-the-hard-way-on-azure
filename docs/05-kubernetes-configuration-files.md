@@ -199,7 +199,7 @@ for instance in worker-0 worker-1 worker-2; do
   PUBLIC_IP_ADDRESS=$(az network public-ip show -g kubernetes \
     -n ${instance}-pip --query "ipAddress" -otsv)
 
-  scp ${instance}.kubeconfig kube-proxy.kubeconfig $(whoami)@${PUBLIC_IP_ADDRESS}:~/
+  scp ${instance}.kubeconfig kube-proxy.kubeconfig kuberoot@${PUBLIC_IP_ADDRESS}:~/
 done
 ```
 
@@ -210,7 +210,7 @@ for instance in controller-0 controller-1 controller-2; do
   PUBLIC_IP_ADDRESS=$(az network public-ip show -g kubernetes \
     -n ${instance}-pip --query "ipAddress" -otsv)
 
-  scp admin.kubeconfig kube-controller-manager.kubeconfig kube-scheduler.kubeconfig $(whoami)@${PUBLIC_IP_ADDRESS}:~/
+  scp admin.kubeconfig kube-controller-manager.kubeconfig kube-scheduler.kubeconfig kuberoot@${PUBLIC_IP_ADDRESS}:~/
 done
 ```
 

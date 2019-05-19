@@ -126,7 +126,7 @@ az vm image list --location westus2 --publisher Canonical --offer UbuntuServer -
 ```
 
 ```shell
-UBUNTULTS="Canonical:UbuntuServer:18.04-LTS:18.04.201812060"
+UBUNTULTS="Canonical:UbuntuServer:18.04-LTS:18.04.201904170"
 ```
 
 ### Kubernetes Controllers
@@ -161,7 +161,8 @@ for i in 0 1 2; do
         --nics controller-${i}-nic \
         --availability-set controller-as \
         --nsg '' \
-        --admin-username 'kuberoot' > /dev/null
+        --admin-username 'kuberoot' > /dev/null \
+        --generate-ssh-keys
 done
 ```
 
@@ -199,7 +200,8 @@ for i in 0 1 2; do
         --tags pod-cidr=10.200.${i}.0/24 \
         --availability-set worker-as \
         --nsg '' \
-        --admin-username 'kuberoot' > /dev/null
+        --admin-username 'kuberoot' > /dev/null \
+        --generate-ssh-keys
 done
 ```
 
