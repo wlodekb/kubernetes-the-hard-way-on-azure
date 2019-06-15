@@ -51,9 +51,9 @@ Install the OS dependencies:
 ```shell
 wget -q --show-progress --https-only --timestamping \
   https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.14.0/crictl-v1.14.0-linux-amd64.tar.gz \
-  https://storage.googleapis.com/gvisor/releases/nightly/latest/runsc \
+  https://storage.googleapis.com/kubernetes-the-hard-way/runsc-50c283b9f56bb7200938d9e207355f05f79f0d17 \
   https://github.com/opencontainers/runc/releases/tag/v1.0.0-rc8/runc.amd64 \
-  https://github.com/containernetworking/cni/archive/v0.7.1.tar.gz \
+  https://github.com/containernetworking/plugins/releases/download/v0.8.1/cni-plugins-linux-amd64-v0.8.1.tgz \
   https://github.com/containerd/containerd/releases/download/v1.2.4/containerd-1.2.4.linux-amd64.tar.gz \
   https://storage.googleapis.com/kubernetes-release/release/v1.14.3/bin/linux/amd64/kubectl \
   https://storage.googleapis.com/kubernetes-release/release/v1.14.3/bin/linux/amd64/kube-proxy \
@@ -80,7 +80,7 @@ Install the worker binaries:
   chmod +x kubectl kube-proxy kubelet runc runsc
   sudo mv kubectl kube-proxy kubelet runc runsc /usr/local/bin/
   sudo tar -xvf crictl-v1.14.0-linux-amd64.tar.gz -C /usr/local/bin/
-  sudo tar -xvf v0.7.1.tar.gz -C /opt/cni/bin/
+  sudo tar -xvf cni-plugins-linux-amd64-v0.8.1.tgz -C /opt/cni/bin/
   sudo tar -xvf containerd-1.2.4.linux-amd64.tar.gz -C /
 }
 ```
@@ -95,7 +95,7 @@ https://github.com/MicrosoftDocs/azure-docs/blob/master/articles/virtual-machine
 POD_CIDR="$(echo $(curl --silent -H Metadata:true "http://169.254.169.254/metadata/instance/compute/tags?api-version=2017-08-01&format=text") | cut -d : -f2)"
 cat <<EOF | sudo tee /etc/cni/net.d/10-bridge.conf
 {
-    "cniVersion": "0.7.1",
+    "cniVersion": "0.2.0",
     "name": "bridge",
     "type": "bridge",
     "bridge": "cnio0",
@@ -117,7 +117,8 @@ Create the `loopback` network configuration file:
 ```shell
 cat <<EOF | sudo tee /etc/cni/net.d/99-loopback.conf
 {
-    "cniVersion": "0.7.1",
+    "cniVersion": "0.2.0",
+    "name": "lo",
     "type": "loopback"
 }
 EOF
@@ -320,9 +321,9 @@ kubectl get nodes
 
 ```shell
 NAME       STATUS    AGE       VERSION
-worker-0   Ready    <none>   19s   v1.13.0
-worker-1   Ready    <none>   17s   v1.13.0
-worker-2   Ready    <none>   16s   v1.13.0
+worker-0   Ready    <none>   32s   v1.14.3
+worker-1   Ready    <none>   32s   v1.14.3
+worker-2   Ready    <none>   37s   v1.14.3
 ```
 
 Next: [Configuring kubectl for Remote Access](10-configuring-kubectl.md)
