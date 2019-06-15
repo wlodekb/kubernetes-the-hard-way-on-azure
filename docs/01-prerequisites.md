@@ -14,7 +14,7 @@ This tutorial leverages the [Microsoft Azure](https://azure.microsoft.com) to st
 
 Follow the Microsoft Azure CLI 2.0 [documentation](https://github.com/azure/azure-cli#installation) to install and configure the `az` command line utility.
 
-Verify the Microsoft Azure CLI 2.0 version is 2.0.41 or higher:
+Verify the Microsoft Azure CLI 2.0 version is 2.0.66 or higher:
 
 ```shell
 az --version
@@ -22,10 +22,10 @@ az --version
 
 ### Create a default Resource Group in a location
 
-The guide assumes you've installed the [Azure CLI 2.0](https://github.com/azure/azure-cli#installation), and will be creating resources in the `westus2` location, within a resource group named `kubernetes`. To create this resource group, simply run the following command:
+The guide assumes you've installed the [Azure CLI 2.0](https://github.com/azure/azure-cli#installation), and will be creating resources in the `eastus2` location, within a resource group named `kubernetes`. To create this resource group, simply run the following command:
 
 ```shell
-az group create -n kubernetes -l westus2
+az group create -n kubernetes -l eastus2
 ```
 
 > Use the `az account list-locations` command to view additional locations.

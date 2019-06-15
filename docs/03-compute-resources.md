@@ -122,11 +122,11 @@ The compute instances in this lab will be provisioned using [Ubuntu Server](http
 To select latest stable Ubuntu Server release run following command and replace UBUNTULTS variable below with latest row in the table.
 
 ```shell
-az vm image list --location westus2 --publisher Canonical --offer UbuntuServer --sku 18.04-LTS --all -o table
+az vm image list --location eastus2 --publisher Canonical --offer UbuntuServer --sku 18.04-LTS --all -o table
 ```
 
 ```shell
-UBUNTULTS="Canonical:UbuntuServer:18.04-LTS:18.04.201904170"
+UBUNTULTS="Canonical:UbuntuServer:18.04-LTS:18.04.201906040"
 ```
 
 ### Kubernetes Controllers

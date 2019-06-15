@@ -11,7 +11,7 @@ CONTROLLER="controller-0"
 PUBLIC_IP_ADDRESS=$(az network public-ip show -g kubernetes \
   -n ${CONTROLLER}-pip --query "ipAddress" -otsv)
 
-ssh $(whoami)@${PUBLIC_IP_ADDRESS}
+ssh kuberoot@${PUBLIC_IP_ADDRESS}
 ```
 
 ### Running commands in parallel with tmux
@@ -32,10 +32,10 @@ Download the official Kubernetes release binaries:
 
 ```shell
 wget -q --show-progress --https-only --timestamping \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kube-apiserver" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kube-controller-manager" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kube-scheduler" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kubectl"
+  "https://storage.googleapis.com/kubernetes-release/release/v1.14.3/bin/linux/amd64/kube-apiserver" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.14.3/bin/linux/amd64/kube-controller-manager" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.14.3/bin/linux/amd64/kube-scheduler" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.14.3/bin/linux/amd64/kubectl"
 ```
 
 Install the Kubernetes binaries:
@@ -85,7 +85,7 @@ ExecStart=/usr/local/bin/kube-apiserver \\
   --authorization-mode=Node,RBAC \\
   --bind-address=0.0.0.0 \\
   --client-ca-file=/var/lib/kubernetes/ca.pem \\
-  --enable-admission-plugins=Initializers,NamespaceLifecycle,NodeRestriction,LimitRanger,ServiceAccount,DefaultStorageClass,ResourceQuota \\
+  --enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,TaintNodesByCondition,Priority,DefaultTolerationSeconds,DefaultStorageClass,PersistentVolumeClaimResize,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota \\
   --enable-swagger-ui=true \\
   --etcd-cafile=/var/lib/kubernetes/ca.pem \\
   --etcd-certfile=/var/lib/kubernetes/kubernetes.pem \\
@@ -213,9 +213,9 @@ kubectl get componentstatuses
 NAME                 STATUS    MESSAGE              ERROR
 controller-manager   Healthy   ok
 scheduler            Healthy   ok
-etcd-2               Healthy   {"health": "true"}
 etcd-0               Healthy   {"health": "true"}
 etcd-1               Healthy   {"health": "true"}
+etcd-2               Healthy   {"health": "true"}
 ```
 
 > Remember to run the above commands on each controller node: `controller-0`, `controller-1`, and `controller-2`.
@@ -231,7 +231,7 @@ CONTROLLER="controller-0"
 PUBLIC_IP_ADDRESS=$(az network public-ip show -g kubernetes \
   -n ${CONTROLLER}-pip --query "ipAddress" -otsv)
 
-ssh $(whoami)@${PUBLIC_IP_ADDRESS}
+ssh kuberoot@${PUBLIC_IP_ADDRESS}
 ```
 
 Create the `system:kube-apiserver-to-kubelet` [ClusterRole](https://kubernetes.io/docs/admin/authorization/rbac/#role-and-clusterrole) with permissions to access the Kubelet API and perform most common tasks associated with managing pods:
@@ -290,7 +290,7 @@ In this section you will provision an external load balancer to front the Kubern
 
 Create the load balancer health probe as a pre-requesite for the lb rule that follows.
 ```shell
-az network lb probe create -g kubernetes \ 
+az network lb probe create -g kubernetes \
   --lb-name kubernetes-lb \
   --name kubernetes-apiserver-probe \
   --port 6443 \
@@ -323,7 +323,7 @@ KUBERNETES_PUBLIC_IP_ADDRESS=$(az network public-ip show -g kubernetes \
 Make a HTTP request for the Kubernetes version info:
 
 ```shell
-curl --cacert ca.pem https://${KUBERNETES_PUBLIC_IP_ADDRESS}:6443/version
+curl --cacert ca.pem https://$KUBERNETES_PUBLIC_IP_ADDRESS:6443/version
 ```
 
 > output
@@ -331,12 +331,12 @@ curl --cacert ca.pem https://${KUBERNETES_PUBLIC_IP_ADDRESS}:6443/version
 ```shell
 {
   "major": "1",
-  "minor": "13",
-  "gitVersion": "v1.13.0",
-  "gitCommit": "ddf47ac13c1a9483ea035a79cd7c10005ff21a6d",
+  "minor": "14",
+  "gitVersion": "v1.14.3",
+  "gitCommit": "5e53fd6bc17c0dec8434817e69b04a25d8ae0ff0",
   "gitTreeState": "clean",
-  "buildDate": "2018-12-03T20:56:12Z",
-  "goVersion": "go1.11.2",
+  "buildDate": "2019-06-06T01:36:19Z",
+  "goVersion": "go1.12.5",
   "compiler": "gc",
   "platform": "linux/amd64"
 }

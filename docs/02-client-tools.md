@@ -10,20 +10,7 @@ Download and install `cfssl` and `cfssljson` from the [cfssl repository](https:/
 
 ### OS X
 
-```shell
-curl -o cfssl https://pkg.cfssl.org/R1.2/cfssl_darwin-amd64
-curl -o cfssljson https://pkg.cfssl.org/R1.2/cfssljson_darwin-amd64
-```
-
-```shell
-chmod +x cfssl cfssljson
-```
-
-```shell
-sudo mv cfssl cfssljson /usr/local/bin/
-```
-
-Some OS X users may experience problems using the pre-built binaries in which case [Homebrew](https://brew.sh) might be a better option:
+OS X users may experience problems using the pre-built binaries in which case [Homebrew](https://brew.sh) might be a better option:
 
 ```
 brew install cfssl
@@ -76,9 +63,9 @@ If this step fails with a runtime error, try installing cfssl following instruct
 > output
 
 ```shell
-Version: 1.3.2
+Version: 1.3.3
 Revision: dev
-Runtime: go1.10.3
+Runtime: go1.12.3
 ```
 
 ```shell
@@ -88,9 +75,9 @@ cfssljson -version
 > output
 
 ```shell
-Version: 1.3.2
+Version: 1.3.3
 Revision: dev
-Runtime: go1.10.3
+Runtime: go1.12.3
 ```
 
 ## Install kubectl
@@ -155,7 +142,7 @@ kubectl version --short
 > output
 
 ```shell
-Client Version: v1.13.0
+Client Version: v1.14.3
 ```
 
 Next: [Provisioning Compute Resources](03-compute-resources.md)

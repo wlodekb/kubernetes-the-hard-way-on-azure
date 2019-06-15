@@ -22,15 +22,15 @@ Download the official etcd release binaries from the [coreos/etcd](https://githu
 
 ```shell
 wget -q --show-progress --https-only --timestamping \
-  "https://github.com/coreos/etcd/releases/download/v3.3.10/etcd-v3.3.10-linux-amd64.tar.gz"
+  "https://github.com/coreos/etcd/releases/download/v3.3.13/etcd-v3.3.13-linux-amd64.tar.gz"
 ```
 
 Extract and install the `etcd` server and the `etcdctl` command line utility:
 
 ```shell
 {
-  tar -xvf etcd-v3.3.10-linux-amd64.tar.gz
-  sudo mv etcd-v3.3.10-linux-amd64/etcd* /usr/local/bin/
+  tar -xvf etcd-v3.3.13-linux-amd64.tar.gz
+  sudo mv etcd-v3.3.13-linux-amd64/etcd* /usr/local/bin/
 }
 ```
 

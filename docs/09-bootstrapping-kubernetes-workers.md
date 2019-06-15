@@ -26,7 +26,7 @@ WORKER="worker-0"
 PUBLIC_IP_ADDRESS=$(az network public-ip show -g kubernetes \
   -n ${WORKER}-pip --query "ipAddress" -otsv)
 
-ssh $(whoami)@${PUBLIC_IP_ADDRESS}
+ssh kuberoot@${PUBLIC_IP_ADDRESS}
 ```
 
 ### Running commands in parallel with tmux
@@ -50,14 +50,14 @@ Install the OS dependencies:
 
 ```shell
 wget -q --show-progress --https-only --timestamping \
-  https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.13.0/crictl-v1.13.0-linux-amd64.tar.gz \
-  https://storage.googleapis.com/kubernetes-the-hard-way/runsc-50c283b9f56bb7200938d9e207355f05f79f0d17 \
-  https://github.com/opencontainers/runc/releases/download/v1.0.0-rc5/runc.amd64 \
-  https://github.com/containernetworking/plugins/releases/download/v0.6.0/cni-plugins-amd64-v0.6.0.tgz \
-  https://github.com/containerd/containerd/releases/download/v1.2.0/containerd-1.2.0.linux-amd64.tar.gz \
-  https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kubectl \
-  https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kube-proxy \
-  https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kubelet
+  https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.14.0/crictl-v1.14.0-linux-amd64.tar.gz \
+  https://storage.googleapis.com/gvisor/releases/nightly/latest/runsc \
+  https://github.com/opencontainers/runc/releases/tag/v1.0.0-rc8/runc.amd64 \
+  https://github.com/containernetworking/cni/archive/v0.7.1.tar.gz \
+  https://github.com/containerd/containerd/releases/download/v1.2.4/containerd-1.2.4.linux-amd64.tar.gz \
+  https://storage.googleapis.com/kubernetes-release/release/v1.14.3/bin/linux/amd64/kubectl \
+  https://storage.googleapis.com/kubernetes-release/release/v1.14.3/bin/linux/amd64/kube-proxy \
+  https://storage.googleapis.com/kubernetes-release/release/v1.14.3/bin/linux/amd64/kubelet
 ```
 
 Create the installation directories:
@@ -76,13 +76,12 @@ Install the worker binaries:
 
 ```shell
 {
-  sudo mv runsc-50c283b9f56bb7200938d9e207355f05f79f0d17 runsc
   sudo mv runc.amd64 runc
   chmod +x kubectl kube-proxy kubelet runc runsc
   sudo mv kubectl kube-proxy kubelet runc runsc /usr/local/bin/
-  sudo tar -xvf crictl-v1.13.0-linux-amd64.tar.gz -C /usr/local/bin/
-  sudo tar -xvf cni-plugins-amd64-v0.6.0.tgz -C /opt/cni/bin/
-  sudo tar -xvf containerd-1.2.0.linux-amd64.tar.gz -C /
+  sudo tar -xvf crictl-v1.14.0-linux-amd64.tar.gz -C /usr/local/bin/
+  sudo tar -xvf v0.7.1.tar.gz -C /opt/cni/bin/
+  sudo tar -xvf containerd-1.2.4.linux-amd64.tar.gz -C /
 }
 ```
 
@@ -96,7 +95,7 @@ https://github.com/MicrosoftDocs/azure-docs/blob/master/articles/virtual-machine
 POD_CIDR="$(echo $(curl --silent -H Metadata:true "http://169.254.169.254/metadata/instance/compute/tags?api-version=2017-08-01&format=text") | cut -d : -f2)"
 cat <<EOF | sudo tee /etc/cni/net.d/10-bridge.conf
 {
-    "cniVersion": "0.3.1",
+    "cniVersion": "0.7.1",
     "name": "bridge",
     "type": "bridge",
     "bridge": "cnio0",
@@ -118,7 +117,7 @@ Create the `loopback` network configuration file:
 ```shell
 cat <<EOF | sudo tee /etc/cni/net.d/99-loopback.conf
 {
-    "cniVersion": "0.3.1",
+    "cniVersion": "0.7.1",
     "type": "loopback"
 }
 EOF
@@ -166,14 +165,17 @@ After=network.target
 [Service]
 ExecStartPre=/sbin/modprobe overlay
 ExecStart=/bin/containerd
-Restart=always
-RestartSec=5
+
 Delegate=yes
 KillMode=process
-OOMScoreAdjust=-999
-LimitNOFILE=1048576
+# Having non-zero Limit*s causes performance problems due to accounting overhead
+# in the kernel. We recommend using cgroups to do container-local accounting.
 LimitNPROC=infinity
 LimitCORE=infinity
+LimitNOFILE=infinity
+# Comment TasksMax if your systemd version does not supports it.
+# Only systemd 226 and above support this version.
+TasksMax=infinity
 
 [Install]
 WantedBy=multi-user.target
@@ -305,7 +307,7 @@ CONTROLLER="controller-0"
 PUBLIC_IP_ADDRESS=$(az network public-ip show -g kubernetes \
   -n ${CONTROLLER}-pip --query "ipAddress" -otsv)
 
-ssh $(whoami)@${PUBLIC_IP_ADDRESS}
+ssh kuberoot@${PUBLIC_IP_ADDRESS}
 ```
 
 List the registered Kubernetes nodes:
