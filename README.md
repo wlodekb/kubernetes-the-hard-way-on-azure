@@ -9,6 +9,8 @@ This tutorial walks you through setting up Kubernetes the hard way. This guide i
 
 Kubernetes The Hard Way is optimized for learning, which means taking the long route to ensure you understand each task required to bootstrap a Kubernetes cluster.
 
+Kubernetes Dashboard configuration has been added at the end of the tutorial, to let you play with you cluster through a UI.
+
 > The results of this tutorial should not be viewed as production ready, and may receive limited support from the community, but don't let that stop you from learning!
 
 ## Target Audience
@@ -43,4 +45,5 @@ This tutorial assumes you have access to the [Microsoft Azure](https://azure.mic
 * [Provisioning Pod Network Routes](docs/11-pod-network-routes.md)
 * [Deploying the DNS Cluster Add-on](docs/12-dns-addon.md)
 * [Smoke Test](docs/13-smoke-test.md)
-* [Cleaning Up](docs/14-cleanup.md)
+* [Dashboard](docs/14-dashboard.md)
+* [Cleaning Up](docs/15-cleanup.md)

@@ -112,7 +112,7 @@ az network public-ip  list --query="[?name=='kubernetes-pip'].{ResourceGroup:res
 ```shell
 ResourceGroup    Region    Allocation    IP
 ---------------  --------  ------------  --------------
-kubernetes       westus2   Static        XX.XXX.XXX.XXX
+kubernetes       eastus2   Static        XX.XXX.XXX.XXX
 ```
 
 ## Virtual Machines

@@ -39,7 +39,7 @@ for instance in controller-0 controller-1 controller-2; do
   PUBLIC_IP_ADDRESS=$(az network public-ip show -g kubernetes \
     -n ${instance}-pip --query "ipAddress" -otsv)
 
-  scp encryption-config.yaml kuberoot@${PUBLIC_IP_ADDRESS}:~/
+  scp -o StrictHostKeyChecking=no encryption-config.yaml kuberoot@${PUBLIC_IP_ADDRESS}:~/
 done
 ```
 
