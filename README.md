@@ -9,7 +9,7 @@ This tutorial walks you through setting up Kubernetes the hard way. This guide i
 
 Kubernetes The Hard Way is optimized for learning, which means taking the long route to ensure you understand each task required to bootstrap a Kubernetes cluster.
 
-Kubernetes Dashboard configuration has been added at the end of the tutorial, to let you play with you cluster through a UI.
+Kubernetes Dashboard configuration has been added at the end of the tutorial, to let you play with the cluster through a UI.
 
 > The results of this tutorial should not be viewed as production ready, and may receive limited support from the community, but don't let that stop you from learning!
 
