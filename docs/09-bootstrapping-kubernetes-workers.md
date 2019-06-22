@@ -54,10 +54,10 @@ wget -q --show-progress --https-only --timestamping \
   https://storage.googleapis.com/gvisor/releases/nightly/latest/runsc \
   https://github.com/opencontainers/runc/releases/download/v1.0.0-rc8/runc.amd64\
   https://github.com/containernetworking/plugins/releases/download/v0.8.1/cni-plugins-linux-amd64-v0.8.1.tgz \
-  https://github.com/containerd/containerd/releases/download/v1.2.4/containerd-1.2.4.linux-amd64.tar.gz \
-  https://storage.googleapis.com/kubernetes-release/release/v1.14.3/bin/linux/amd64/kubectl \
-  https://storage.googleapis.com/kubernetes-release/release/v1.14.3/bin/linux/amd64/kube-proxy \
-  https://storage.googleapis.com/kubernetes-release/release/v1.14.3/bin/linux/amd64/kubelet
+  https://github.com/containerd/containerd/releases/download/v1.2.7/containerd-1.2.7.linux-amd64.tar.gz \
+  https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl \
+  https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kube-proxy \
+  https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubelet
 ```
 
 Create the installation directories:
@@ -81,7 +81,7 @@ Install the worker binaries:
   sudo mv kubectl kube-proxy kubelet runc runsc /usr/local/bin/
   sudo tar -xvf crictl-v1.14.0-linux-amd64.tar.gz -C /usr/local/bin/
   sudo tar -xvf cni-plugins-linux-amd64-v0.8.1.tgz -C /opt/cni/bin/
-  sudo tar -xvf containerd-1.2.4.linux-amd64.tar.gz -C /
+  sudo tar -xvf containerd-1.2.7.linux-amd64.tar.gz -C /
 }
 ```
 
@@ -321,9 +321,9 @@ kubectl get nodes
 
 ```shell
 NAME       STATUS    AGE       VERSION
-worker-0   Ready    <none>   32s   v1.14.3
-worker-1   Ready    <none>   32s   v1.14.3
-worker-2   Ready    <none>   37s   v1.14.3
+worker-0   Ready    <none>   32s   v1.15.0
+worker-1   Ready    <none>   32s   v1.15.0
+worker-2   Ready    <none>   37s   v1.15.0
 ```
 
 Next: [Configuring kubectl for Remote Access](10-configuring-kubectl.md)

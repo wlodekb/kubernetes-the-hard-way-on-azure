@@ -142,7 +142,7 @@ kubectl version --short
 > output
 
 ```shell
-Client Version: v1.14.3
+Client Version: v1.15.0
 ```
 
 Next: [Provisioning Compute Resources](03-compute-resources.md)
