@@ -44,3 +44,5 @@ kubectl get secret $(kubectl get serviceaccount dashboard -o jsonpath="{.secrets
 ```
 
 Finally, just copy the secret token and paste it in Dashboard Login interface, by selecting the token option (second radiobox). After Sign In you will be redirected to the Kubernetes Dashboard Homepage.
+
+Next: [Cleaning Up](15-cleanup.md)
