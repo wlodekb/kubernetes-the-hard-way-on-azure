@@ -16,7 +16,7 @@ Kubernetes The Hard Way는 학습에 최적화되어 있으므로 쿠버네티�
 
 이 튜토리얼의 독자들은 프로덕션 쿠버네티스 클러스터를 지원할 계획이며 모든 것이 어떻게 결합되는지 이해하고자하는 분들입니다.
 
-## Cluster Details
+## 클러스터 세부 사항
 
 Kubernetes Hard Way는 구성 요소 간 엔드 투 엔드 암호화와 RBAC 인증을 통해 고 가용성 쿠버네티스 클러스터를 부트 스트랩하는 과정을 안내합니다.
 
@@ -29,20 +29,20 @@ Kubernetes Hard Way는 구성 요소 간 엔드 투 엔드 암호화와 RBAC 인
 
 ## 실험실
 
-This tutorial assumes you have access to the [Microsoft Azure](https://azure.microsoft.com). While Azure is used for basic infrastructure requirements the lessons learned in this tutorial can be applied to other platforms.
+이 자습서에서는 [Microsoft Azure](https://azure.microsoft.com)에 액세스 할 수 있다고 가정합니다. Azure는 기본 인프라 요구 사항에 사용되지만이 자습서에서 학습 한 교훈은 다른 플랫폼에 적용될 수 있습니다.
 
-- [Prerequisites](docs/01-prerequisites.md)
-- [Installing the Client Tools](docs/02-client-tools.md)
-- [Provisioning Compute Resources](docs/03-compute-resources.md)
-- [Provisioning the CA and Generating TLS Certificates](docs/04-certificate-authority.md)
+- [전제 조건](docs/01-prerequisites.md)
+- [클라이언트 도구 설치](docs/02-client-tools.md)
+- [컴퓨팅 리소스 프로비저닝](docs/03-compute-resources.md)
+- [CA 프로비저닝 및 TLS 인증서 생성](docs/04-certificate-authority.md)
 - [인증을 위한 쿠버네티스 구성 파일 생성](docs/05-kubernetes-configuration-files.md)
-- [Generating the Data Encryption Config and Key](docs/06-data-encryption-keys.md)
-- [Bootstrapping the etcd Cluster](docs/07-bootstrapping-etcd.md)
+- [데이터 암호화 구성 및 키 생성](docs/06-data-encryption-keys.md)
+- [etcd 클러스터 부트 스트랩](docs/07-bootstrapping-etcd.md)
 - [쿠버네티스 컨트롤 플레인 부트 스트랩](docs/08-bootstrapping-kubernetes-controllers.md)
 - [쿠버네티스 컨트롤 플레인 부트 스트랩](docs/09-bootstrapping-kubernetes-workers.md)
 - [원격 액세스를 위한 kubectl 구성](docs/10-configuring-kubectl.md)
 - [파드 네트워크 경로 프로비저닝](docs/11-pod-network-routes.md)
-- [Deploying the DNS Cluster Add-on](docs/12-dns-addon.md)
+- [DNS 클러스터 애드온 배포](docs/12-dns-addon.md)
 - [스모크 테스트](docs/13-smoke-test.md)
 - [대시보드](docs/14-dashboard.md)
 - [정리하기](docs/15-cleanup.md)
