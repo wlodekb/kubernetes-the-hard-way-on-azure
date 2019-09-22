@@ -40,7 +40,7 @@ kubectl config set-context kubernetes-the-hard-way \
 kubectl config use-context kubernetes-the-hard-way
 ```
 
-## Verification
+## 확인
 
 원격 쿠버네티스 클러스터 컴포넌트들의 상태를 확인합니다.
 
