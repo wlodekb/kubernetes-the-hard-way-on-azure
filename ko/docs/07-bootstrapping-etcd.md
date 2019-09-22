@@ -2,7 +2,7 @@
 
 Kubernetes 구성 요소는 상태 독립적이며 클러스터 상태를 [etcd](https://github.com/etcd-io/etcd)에 저장합니다. 이 실습에서는 3개의 작업자 노드로 구성된 클러스터를 부트스트랩하고 고 가용성 및 안전한 원격 액세스를 위해 구성합니다.
 
-## Prerequisites
+## 전제 조건
 
 각 컨트롤러 인스턴스 (`controller-0`, `controller-1` 및 `controller-2`)에 로그인해서 이 실습에 포함된 내용을 실행해야합니다. 각 인스턴스에 로그인하기 위해서는 `az` 명령을 사용하여 각 컨트롤러 인스턴스의 퍼블릭 IP를 찾아야 하며, 아래와 같이 실행하여 찾을 수 있습니다.
 
@@ -16,7 +16,7 @@ ssh kuberoot@${PUBLIC_IP_ADDRESS}
 
 ## etcd 클러스터 멤버 부트스트랩
 
-### Download and Install the etcd Binaries
+### etcd 바이너리 다운로드 및 설치
 
 [etcd-io/etcd](https://github.com/etcd-io/etcd) GitHub 프로젝트에서 공식 etcd 릴리스 바이너리를 다운로드하십시오.
 
@@ -34,7 +34,7 @@ wget -q --show-progress --https-only --timestamping \
 }
 ```
 
-### Configure the etcd Server
+### etcd 서버 구성
 
 ```shell
 {
@@ -106,7 +106,7 @@ sudo mv etcd.service /etc/systemd/system/
 
 > 각 컨트롤러 노드에서 `controller-0`, `controller-1` 및 `controller-2` 명령을 실행해야 한다는 것을 놓치지 마세요.
 
-## Verification
+## 확인
 
 etcd 클러스터 멤버를 확인합니다.
 
