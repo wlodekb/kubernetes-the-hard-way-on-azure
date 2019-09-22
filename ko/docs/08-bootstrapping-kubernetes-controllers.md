@@ -2,7 +2,7 @@
 
 이 실습에서는 3개의 컴퓨팅 인스턴스에서 쿠버네티스 컨트롤 플레인을 부트스트랩하고 고 가용성을 위해 구성합니다. 또한 쿠버네티스 API 서버를 원격 클라이언트에 노출시키는 외부 로드 밸런서를 생성합니다. 쿠버네티스 API 서버, 스케줄러 및 컨트롤러 관리자와 같은 구성 요소가 각 노드에 설치됩니다.
 
-## Prerequisites
+## 전제 조건
 
 각 컨트롤러 인스턴스 (`controller-0`, `controller-1` 및 `controller-2`)에 로그인해서 이 실습에 포함된 내용을 실행해야합니다. 각 인스턴스에 로그인하기 위해서는 `az` 명령을 사용하여 각 컨트롤러 인스턴스의 퍼블릭 IP를 찾아야 하며, 아래와 같이 실행하여 찾을 수 있습니다.
 
@@ -191,7 +191,7 @@ WantedBy=multi-user.target
 EOF
 ```
 
-### Start the Controller Services
+### 컨트롤러 서비스 시작
 
 ```shell
 {
@@ -203,7 +203,7 @@ EOF
 
 > 쿠버네티스 API 서버가 완전히 초기화 될 때까지 최대 10초 정도 소요됩니다.
 
-### Verification
+### 확인
 
 ```shell
 kubectl get componentstatuses
@@ -312,7 +312,7 @@ az network lb rule create -g kubernetes \
   --probe-name kubernetes-apiserver-probe
 ```
 
-### Verification
+### 확인
 
 `kubernetes-the-hard-way` 고정 IP 주소를 확인합니다.
 
