@@ -1,16 +1,16 @@
-# Provisioning Compute Resources
+# 컴퓨팅 리소스 프로비저닝
 
 쿠버네티스는 쿠버네티스 컨트롤 플레인과 컨테이너가 궁극적으로 실행되는 작업자 노드를 호스팅하기 위해 일련의 컴퓨터가 필요합니다. 이 실습에서는 단일 [리전](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-overview#resource-groups) 의 단일 [리소스 그룹](https://azure.microsoft.com/en-us/regions/) 내에서 안전하고 가용성이 높은 쿠버네티스 클러스터를 실행하는 데 필요한 컴퓨팅 리소스를 프로비저닝합니다.
 
 > [전제 조건](01-prerequisites.md#create-a-deafult-resource-group-in-a-region) 모듈에서 설명한대로 리소스 그룹이 준비되었는지 확인합니다.
 
-## Networking
+## 네트워킹
 
 쿠버네티스 [네트워킹 모델](https://kubernetes.io/docs/concepts/cluster-administration/networking/#kubernetes-model) 은 컨테이너와 노드가 서로 통신 할 수있는 플랫 네트워크를 가정합니다. 만약 이 모델을 사용할 수 없는 경우 [네트워크 정책](https://kubernetes.io/docs/concepts/services-networking/network-policies/)은 컨테이너 그룹이 서로 및 외부 네트워크 엔드 포인트와 통신하는 방법을 제한할 수 있습니다.
 
 > 네트워크 정책 설정은 이 자습서에서 다루지 않습니다.
 
-### Virtual Network
+### 가상 네트워크
 
 이 섹션에서는 Kubernetes 클러스터를 호스팅하기 위해 전용 [가상 네트워크](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview) (VNet)를 설정합니다.
 
@@ -23,9 +23,9 @@ az network vnet create -g kubernetes \
   --subnet-name kubernetes-subnet
 ```
 
-> The `10.240.0.0/24` IP address range can host up to 254 compute instances.
+> `10.240.0.0/24` IP 주소 범위는 최대 254 개의 컴퓨팅 인스턴스를 호스팅 할 수 있습니다.
 
-### Firewall Rules
+### 방화벽 규칙
 
 방화벽 ([네트워크 보안 그룹, NSG](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-nsg))을 만들어 서브넷에 지정합니다.
 
@@ -115,7 +115,7 @@ ResourceGroup    Region    Allocation    IP
 kubernetes       eastus2   Static        XX.XXX.XXX.XXX
 ```
 
-## Virtual Machines
+## 가상 머신
 
 이 실습의 컴퓨팅 인스턴스는 [우분투 서버](https://www.ubuntu.com/server) 18.04를 사용하여 프로비저닝되며, [cri-containerd](https://github.com/kubernetes-incubator/cri-containerd) 런타임을 잘 지원합니다. 각 컴퓨팅 인스턴스에는 쿠버네티스 부트 스트랩 과정을 단순화하기 위해 고정 프라이빗 IP 주소가 제공됩니다.
 
@@ -172,7 +172,7 @@ done
 
 > Kubernetes 클러스터 CIDR 범위는 Controller Manager의 `--cluster-cidr` 플래그로 정의됩니다. 이 자습서에서 클러스터 CIDR 범위는 `10.240.0.0/16` 으로 설정되며 254 개의 서브넷을 지원합니다.
 
-Create three compute instances which will host the Kubernetes worker nodes in `worker-as` Availability Set:
+`worker-as` 가용성 집합에서 Kubernetes 작업자 노드를 호스팅 할 계산 인스턴스를 세 개 만듭니다.
 
 ```shell
 az vm availability-set create -g kubernetes -n worker-as
@@ -205,7 +205,7 @@ for i in 0 1 2; do
 done
 ```
 
-### Verification
+### 확인
 
 만들어진 가상 컴퓨터 인스턴스들을 확인합니다.
 
