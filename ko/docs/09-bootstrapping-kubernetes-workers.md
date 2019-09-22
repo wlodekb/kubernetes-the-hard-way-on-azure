@@ -2,7 +2,7 @@
 
 이 실습에서는 3개의 쿠버네티스 워커 노드를 부트스트랩합니다. [runc](https://github.com/opencontainers/runc), [컨테이너 네트워킹 플러그인](https://github.com/containernetworking/cni), [cri-containerd](https://github.com/kubernetes-incubator/cri-containerd), [kubelet](https://kubernetes.io/docs/admin/kubelet) 및 [kube-proxy](https://kubernetes.io/docs/concepts/cluster-administration/proxies) 구성 요소가 각 노드에 설치됩니다.
 
-## Prerequisites
+## 전제 조건
 
 각 워커 인스턴스 (`worker-0`, `worker-1` 및 `worker-2`)에 로그인해서 이 실습에 포함된 내용을 실행해야합니다.
 Azure 메타데이터 인스턴스 서비스는 사용자 지정 속성을 설정하는데 사용할 수 없으므로, 대신 각 워커 VM에서 *태그* 를 사용하여 나중에 사용되는 POD-CIDR을 정의했습니다.
@@ -44,7 +44,7 @@ OS 종속성을 설치합니다.
 }
 ```
 
-> The socat binary enables support for the `kubectl port-forward` command.
+> socat 바이너리는 `kubectl port-forward` 명령을 지원합니다.
 
 ### 워커 바이너리 다운로드 및 설치
 
@@ -85,7 +85,7 @@ sudo mkdir -p \
 }
 ```
 
-### Configure CNI Networking
+### CNI 네트워킹 구성
 
 POD_CIDR을 Azure VM 태그에서 처음 검색된 주소로 바꾸는 `bridge` 네트워크 구성 파일을 만듭니다. (참고: Azure Metadata Instance Service는 각 작업자의 POD_CIDR 태그를 검색하는 데 사용됩니다. https://github.com/MicrosoftDocs/azure-docs/blob/master/articles/virtual-machines/windows/instance-metadata-service.md)
 
@@ -181,7 +181,7 @@ WantedBy=multi-user.target
 EOF
 ```
 
-### Configure the Kubelet
+### Kubelet 구성
 
 ```shell
 {
@@ -217,7 +217,7 @@ tlsPrivateKeyFile: "/var/lib/kubelet/${HOSTNAME}-key.pem"
 EOF
 ```
 
-> The `resolvConf` configuration is used to avoid loops when using CoreDNS for service discovery on systems running `systemd-resolved`.
+> `resolvConf` 구성은 `systemd-resolved` 실행하는 시스템에서 서비스 발견을 위해 CoreDNS를 사용할 때 루프를 피하기 위해 사용됩니다.
 
 `kubelet.service` 시스템 유닛 파일을 만듭니다.
 
@@ -297,7 +297,7 @@ EOF
 
 > 각 워커 노드 (`worker-0`, `worker-1` 및 `worker-2`) 에서 위의 명령을 실행해야 합니다.
 
-## Verification
+## 확인
 
 컨트롤러 노드 중 하나에 로그인합니다.
 
