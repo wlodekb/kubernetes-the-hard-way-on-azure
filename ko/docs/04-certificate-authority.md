@@ -1,4 +1,4 @@
-# Provisioning a CA and Generating TLS Certificates
+# CA 프로비저닝 및 TLS 인증서 생성
 
 이 실습에서는 CloudFlare의 PKI 도구인 [cfssl](https://en.wikipedia.org/wiki/Public_key_infrastructure)을 사용하여 [PKI 인프라](https://github.com/cloudflare/cfssl)를 프로비저닝 한 다음, 이를 사용하여 인증 기관을 부트 스트랩하고 etcd, kube-apiserver, kubelet 및 kube-proxy와 같은 구성 요소에 대한 TLS 인증서를 생성합니다.
 
@@ -62,11 +62,11 @@ ca-key.pem
 ca.pem
 ```
 
-## Client and Server Certificates
+## 클라이언트 및 서버 인증서
 
 이 섹션에서는 각 쿠버네티스 구성 요소에 대한 클라이언트 및 서버 인증서와 쿠버네티스 `admin` 사용자에 대한 클라이언트 인증서를 생성합니다.
 
-### The Admin Client Certificate
+### 관리 클라이언트 인증서
 
 `admin` 클라이언트 인증서 서명 요청을 작성합니다.
 
@@ -109,7 +109,7 @@ admin-key.pem
 admin.pem
 ```
 
-### The Kubelet Client Certificates
+### Kubelet 클라이언트 인증서
 
 쿠버네티스는 노드 인증자라는 [특수 목적의 권한 부여 모드를](https://kubernetes.io/docs/admin/authorization/node/) 사용합니다. 이 [모드](https://kubernetes.io/docs/concepts/overview/components/#kubelet)는 {a2}Kubelets의{/a2} API 요청을 구체적으로 승인합니다. 노드 인증자를 통해 권한을 부여하기 위해 새로 등록하는 Kubelet은 `system:node:<nodeName>` 이라는 사용자 이름이 {code4}system:nodes{/code4} 그룹에 속하는 것으로 식별되는 자격 증명을 사용해야합니다. 이 섹션에서는 노드 권한 부여자 요구 사항을 충족하는 각 쿠버네티스 작업자 노드에 대한 인증서를 만듭니다.
 
@@ -162,7 +162,7 @@ worker-2-key.pem
 worker-2.pem
 ```
 
-### The Controller Manager Client Certificate
+### 컨트롤러 관리자 클라이언트 인증서
 
 `kube-controller-manager` 클라이언트 인증서 및 개인 키를 생성합니다.
 
@@ -248,7 +248,7 @@ kube-proxy-key.pem
 kube-proxy.pem
 ```
 
-### The Scheduler Client Certificate
+### 스케줄러 클라이언트 인증서
 
 `kube-scheduler` 클라이언트 인증서 및 개인 키를 생성합니다.
 
@@ -344,7 +344,7 @@ kubernetes-key.pem
 kubernetes.pem
 ```
 
-## The Service Account Key Pair
+## 서비스 계정 키 페어
 
 쿠버네티스 컨트롤러 매니저는 서비스 계정 [관리](https://kubernetes.io/docs/admin/service-accounts-admin/) 문서에 설명 된대로 키 페어를 사용하여 서비스 계정 토큰을 생성하고 서명합니다.
 
@@ -389,7 +389,7 @@ service-account-key.pem
 service-account.pem
 ```
 
-## Distribute the Client and Server Certificates
+## 클라이언트 및 서버 인증서 배포
 
 ## 이전 단계를 따르는 경우 리눅스 VM을 만드는 데 사용 된 사용자 이름은 kuberoot입니다.
 
