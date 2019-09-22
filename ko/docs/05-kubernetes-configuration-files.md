@@ -2,7 +2,7 @@
 
 이 실습에서는 kubeconfigs 라고 불리는 [쿠버네티스 구성 파일](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/) 을 생성하여 쿠버네티스 클라이언트가 쿠버네티스 API 서버를 찾고 인증 할 수 있도록 합니다.
 
-## Client Authentication Configs
+## 클라이언트 인증 구성
 
 이 섹션에서는 `controller manager`, `kubelet`, `kube-proxy` 및 `scheduler` 클라이언트와 `admin` 사용자에 대한 kubeconfig 파일을 생성합니다.
 
