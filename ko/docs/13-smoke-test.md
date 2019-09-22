@@ -48,7 +48,7 @@ ssh kuberoot@${PUBLIC_IP_ADDRESS} \
 
 etcd 키는 반드시 `k8s:enc:aescbc:v1:key1` 접두사를 사용해야 하며, 이것은 `aescbc` 공급자가 `key1` 암호화 키로 데이터를 암호화하기 위하여 사용되었음을 나타냅니다.
 
-## Deployments
+## 배포
 
 이 섹션에서는 [배포](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)를 만들고 관리하는 기능을 확인합니다.
 
@@ -71,9 +71,9 @@ NAME                     READY     STATUS    RESTARTS   AGE
 nginx                    1/1       Running   0          15s
 ```
 
-### Port Forwarding
+### 포트 포워딩
 
-In this section you will verify the ability to access applications remotely using [port forwarding](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/).
+이 섹션에서는 [포트 포워딩](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/)을 사용하여 원격으로 응용 프로그램에 액세스하는 기능을 확인합니다.
 
 `nginx` 파드의 전체 이름을 확인합니다.
 
@@ -123,7 +123,7 @@ Handling connection for 8080
 ^C
 ```
 
-### Logs
+### 로그
 
 이 섹션에서는 [컨테이너 로그](https://kubernetes.io/docs/concepts/cluster-administration/logging/)를 출력하는 기능을 확인합니다.
 
@@ -157,7 +157,7 @@ nginx version: nginx/1.17.0
 
 ## 서비스
 
-In this section you will verify the ability to expose applications using a [Service](https://kubernetes.io/docs/concepts/services-networking/service/).
+이 섹션에서는 [서비스](https://kubernetes.io/docs/concepts/services-networking/service/)를 사용하여 응용 프로그램을 노출하는 기능을 확인합니다.
 
 {a0}NodePort{/a0} 서비스를 사용하여 {code1}nginx{/code1} 배포를 외부에서 접속할 수 있게 공개합니다.
 
