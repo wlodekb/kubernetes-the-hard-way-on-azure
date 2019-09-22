@@ -1,8 +1,8 @@
-# Installing the Client Tools
+# 클라이언트 도구 설치
 
 이 모듈에서는 이 자습서를 완료하는 데 필요한 CLI 유틸리티 인 [cfssl](https://github.com/cloudflare/cfssl), [cfssljson](https://github.com/cloudflare/cfssl) 및 [kubectl을 설치](https://kubernetes.io/docs/tasks/tools/install-kubectl) 합니다.
 
-## Install CFSSL
+## CFSSL 설치
 
 `cfssl` 및 `cfssljson` CLI 유틸리티는 [PKI 인프라](https://en.wikipedia.org/wiki/Public_key_infrastructure)를 프로비저닝하고, TLS 인증서를 생성하는 데 사용됩니다.
 
@@ -16,7 +16,7 @@ OS X 사용자는 사전 빌드 된 바이너리를 사용하는 데 문제가 �
 brew install cfssl
 ```
 
-### Linux
+### 리눅스
 
 ```shell
 wget -q --show-progress --https-only --timestamping \
@@ -52,7 +52,7 @@ PS C:\Windows\system32>Invoke-WebRequest -Uri https://pkg.cfssl.org/R1.2/cfssl_w
 PS C:\Windows\system32>Invoke-WebRequest -Uri https://pkg.cfssl.org/R1.2/cfssljson_windows-amd64.exe -OutFile cfssljson.exe
 ```
 
-### Verification
+### 확인
 
 `cfssl` 버전 1.2.0 이상이 설치되었는지 확인합니다.
 
@@ -82,7 +82,7 @@ Revision: dev
 Runtime: go1.12.3
 ```
 
-## Install kubectl
+## kubectl 설치
 
 `kubectl` CLI 유틸리티는 쿠버네티스 API 서버와 상호 작용하는 데 사용됩니다. 공식 릴리스 바이너리에서 `kubectl` 을 다운로드하여 설치합니다.
 
@@ -100,7 +100,7 @@ chmod +x kubectl
 sudo mv kubectl /usr/local/bin/
 ```
 
-### Linux
+### 리눅스
 
 ```shell
 wget https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kubectl
@@ -116,13 +116,13 @@ sudo mv kubectl /usr/local/bin/
 
 ### Windows
 
-Note you need to have chocolately package manager installed first (https://chocolatey.org/)
+먼저 초콜릿 패키지 관리자를 설치해야합니다 (https://chocolatey.org/)
 
 ```shell
 PS C:\Windows\system32>choco install kubernetes-cli
 ```
 
-### Verification
+### 확인
 
 `kubectl` 버전 1.13.0 이상이 설치되었는지 확인합니다.
 
@@ -136,7 +136,7 @@ kubectl version --client
 Client Version: version.Info{Major:"1", Minor:"13", GitVersion:"v1.13.0", GitCommit:"ddf47ac13c1a9483ea035a79cd7c10005ff21a6d", GitTreeState:"clean", BuildDate:"2018-12-03T21:04:45Z", GoVersion:"go1.11.2", Compiler:"gc", Platform:"darwin/amd64"}
 ```
 
-To quick check kubectl version, you can also use the following command :
+kubectl 버전을 빠르게 확인하려면 다음 명령을 사용할 수도 있습니다.
 
 ```shell
 kubectl version --short
