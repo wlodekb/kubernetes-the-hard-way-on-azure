@@ -6,9 +6,9 @@
 
 > 쿠버네티스 네트워킹 모델을 구현하는 [방법들](https://kubernetes.io/docs/concepts/cluster-administration/networking/#how-to-achieve-this)은 여러 가지가 있습니다.
 
-## The Routing Table
+## 라우팅 테이블
 
-In this section you will gather the information required to create routes in the kubernetes-vnet.
+이 섹션에서는 kubernetes-vnet에서 경로를 만드는 데 필요한 정보를 수집합니다.
 
 각 워커 인스턴스의 내부 IP 주소 및 포드 CIDR 범위를 인쇄합니다.
 
