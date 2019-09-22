@@ -1,8 +1,8 @@
-# Deploying the DNS Cluster Add-on
+# DNS 클러스터 애드온 배포
 
 이 실습에서는 [CoreDNS](https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/) 에 의해 지원되는 DNS 기반 서비스 검색을 쿠버네티스 클러스터 내에서 실행되는 응용 프로그램에 제공하는 [DNS 애드온](https://coredns.io/) 을 배포합니다.
 
-## The DNS Cluster Add-on
+## DNS 클러스터 애드온
 
 `coredns` 클러스터 애드온을 배포합니다.
 
@@ -35,7 +35,7 @@ coredns-699f8ddd77-94qv9   1/1     Running   0          20s
 coredns-699f8ddd77-gtcgb   1/1     Running   0          20s
 ```
 
-## Verification
+## 확인
 
 `busybox` 배포를 만듭니다.
 
