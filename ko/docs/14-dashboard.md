@@ -2,7 +2,7 @@
 
 이 실습에서는 쿠버네티스 대시보드를 설치합니다.
 
-## Installation
+## 설치
 
 다음 명령을 실행하여 대시 보드를 배포합니다.
 
@@ -22,9 +22,9 @@ kubectl proxy
 > 
 > 접속하면 kubeconfig 파일이나 토큰을 묻는 로그인 페이지가 나타납니다.
 
-A service account and its credentials are needed to login.
+로그인하려면 서비스 계정 및 해당 자격 증명이 필요합니다.
 
-## Service Account creation
+## 서비스 계정 생성
 
 다음 명령을 사용하여 서비스 계정을 만듭니다.
 
