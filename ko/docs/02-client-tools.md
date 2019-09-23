@@ -6,7 +6,7 @@
 
 `cfssl` 및 `cfssljson` CLI 유틸리티는 [PKI 인프라](https://en.wikipedia.org/wiki/Public_key_infrastructure)를 프로비저닝하고, TLS 인증서를 생성하는 데 사용됩니다.
 
-`cfssl`과 `cfssljson`을 {a0}cfssl 패키지 저장소{/a0}에서 다운로드하여 설치합니다.
+`cfssl`과 `cfssljson`을 [cfssl 패키지 저장소](https://pkg.cfssl.org/)에서 다운로드하여 설치합니다.
 
 ### OS X
 
