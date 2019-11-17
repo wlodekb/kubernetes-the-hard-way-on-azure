@@ -1,11 +1,11 @@
 # Bootstrapping the Kubernetes Worker Nodes
 
-In this lab you will bootstrap three Kubernetes worker nodes. The following components will be installed on each node: [runc](https://github.com/opencontainers/runc), [container networking plugins](https://github.com/containernetworking/cni), [cri-containerd](https://github.com/kubernetes-incubator/cri-containerd), [kubelet](https://kubernetes.io/docs/admin/kubelet), and [kube-proxy](https://kubernetes.io/docs/concepts/cluster-administration/proxies).
+In this lab you will bootstrap three Kubernetes worker nodes. The following components will be installed on each node: [runc](https://github.com/opencontainers/runc), [container networking plugins](https://github.com/containernetworking/cni), [cri-containerd](https://github.com/containerd/cri), [kubelet](https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/), and [kube-proxy](https://kubernetes.io/docs/concepts/cluster-administration/proxies/).
 
 ## Prerequisites
 
-The commands in this lab must be run on each worker instance: `worker-0`, `worker-1`, and `worker-2`. 
-Azure Metadata Instace service cannot be used to set custom property. We have used *tags* on each worker VM to defined POD-CIDR used later.
+The commands in this lab must be run on each worker instance: `worker-0`, `worker-1`, and `worker-2`.
+Azure Instance Metadata Service cannot be used to set custom property. We have used *tags* on each worker VM to defined POD-CIDR used later.
 
 Retrieve the POD CIDR range for the current compute instance and keep it for later.
 
@@ -88,8 +88,8 @@ Install the worker binaries:
 ### Configure CNI Networking
 
 Create the `bridge` network configuration file replacing POD_CIDR with address retrieved initially from Azure VM tags:
-(Note: The Azure Metadata Instance Service is used to retrieve the POD_CIDR tag for each worker.
-https://github.com/MicrosoftDocs/azure-docs/blob/master/articles/virtual-machines/windows/instance-metadata-service.md)
+
+> Note: the [Azure Instance Metadata Service](https://docs.microsoft.com/azure/virtual-machines/windows/instance-metadata-service) is used to retrieve the POD_CIDR tag for each worker.
 
 ```shell
 POD_CIDR="$(echo $(curl --silent -H Metadata:true "http://169.254.169.254/metadata/instance/compute/tags?api-version=2017-08-01&format=text") | cut -d : -f2)"

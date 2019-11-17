@@ -1,10 +1,10 @@
 # Provisioning Pod Network Routes
 
-Pods scheduled to a node receive an IP address from the node's Pod CIDR range. At this point pods can not communicate with other pods running on different nodes due to missing network [routes](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-udr-overview).
+Pods scheduled to a node receive an IP address from the node's Pod CIDR range. At this point pods can not communicate with other pods running on different nodes due to missing network [routes](https://docs.microsoft.com/azure/virtual-network/virtual-networks-udr-overview#user-defined).
 
 In this lab you will create a route for each worker node that maps the node's Pod CIDR range to the node's internal IP address.
 
-> There are [other ways](https://kubernetes.io/docs/concepts/cluster-administration/networking/#how-to-achieve-this) to implement the Kubernetes networking model.
+> There are [other ways](https://kubernetes.io/docs/concepts/cluster-administration/networking/#how-to-implement-the-kubernetes-networking-model) to implement the Kubernetes networking model.
 
 ## The Routing Table
 

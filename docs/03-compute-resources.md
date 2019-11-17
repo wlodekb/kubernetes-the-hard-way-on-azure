@@ -1,6 +1,6 @@
 # Provisioning Compute Resources
 
-Kubernetes requires a set of machines to host the Kubernetes control plane and the worker nodes where containers are ultimately run. In this lab you will provision the compute resources required for running a secure and highly available Kubernetes cluster within a single [Resource Group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-overview#resource-groups) in a single [region](https://azure.microsoft.com/en-us/regions/)
+Kubernetes requires a set of machines to host the Kubernetes control plane and the worker nodes where containers are ultimately run. In this lab you will provision the compute resources required for running a secure and highly available Kubernetes cluster within a single [Resource Group](https://docs.microsoft.com/azure/azure-resource-manager/resource-group-overview#resource-groups) in a single [region](https://azure.microsoft.com/global-infrastructure/regions/)
 Create a default Resource Group in a region
 > Ensure a resource group has been created as described in the [Prerequisites](01-prerequisites.md#create-a-deafult-resource-group-in-a-region) lab.
 
@@ -12,7 +12,7 @@ The Kubernetes [networking model](https://kubernetes.io/docs/concepts/cluster-ad
 
 ### Virtual Network
 
-In this section a dedicated [Virtual Network](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview) (VNet) network will be setup to host the Kubernetes cluster.
+In this section a dedicated [Virtual Network](https://docs.microsoft.com/azure/virtual-network/virtual-networks-overview) (VNet) network will be setup to host the Kubernetes cluster.
 
 Create the `kubernetes-vnet` custom VNet network with a subnet `kubernetes` provisioned with an IP address range large enough to assign a private IP address to each node in the Kubernetes cluster.:
 
@@ -27,7 +27,7 @@ az network vnet create -g kubernetes \
 
 ### Firewall Rules
 
-Create a firewall ([Network Security Group](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-nsg)) and assign it to the subnet:
+Create a firewall ([Network Security Group](https://docs.microsoft.com/azure/virtual-network/virtual-network-vnet-plan-design-arm#security)) and assign it to the subnet:
 
 ```shell
 az network nsg create -g kubernetes -n kubernetes-nsg
@@ -70,7 +70,7 @@ az network nsg rule create -g kubernetes \
   --priority 1001
 ```
 
-> An [external load balancer](https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-overview) will be used to expose the Kubernetes API Servers to remote clients.
+> An [external load balancer](https://docs.microsoft.com/azure/load-balancer/load-balancer-overview) will be used to expose the Kubernetes API Servers to remote clients.
 
 List the firewall rules in the `kubernetes-vnet` VNet network:
 
@@ -131,7 +131,7 @@ UBUNTULTS="Canonical:UbuntuServer:18.04-LTS:18.04.201906170"
 
 ### Kubernetes Controllers
 
-Create three compute instances which will host the Kubernetes control plane in `controller-as` [Availability Set](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/availability#availability-sets):
+Create three compute instances which will host the Kubernetes control plane in `controller-as` [Availability Set](https://docs.microsoft.com/azure/virtual-machines/linux/tutorial-availability-sets#availability-set-overview):
 
 ```shell
 az vm availability-set create -g kubernetes -n controller-as

@@ -6,7 +6,7 @@ In this lab you will install the command line utilities required to complete thi
 
 The `cfssl` and `cfssljson` command line utilities will be used to provision a [PKI Infrastructure](https://en.wikipedia.org/wiki/Public_key_infrastructure) and generate TLS certificates.
 
-Download and install `cfssl` and `cfssljson` from the [cfssl repository](https://pkg.cfssl.org):
+Download and install `cfssl` and `cfssljson` from the [cfssl repository](https://github.com/cloudflare/cfssl/releases):
 
 ### OS X
 
