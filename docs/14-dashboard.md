@@ -1,6 +1,6 @@
 # Dashboard configuration
 
-In this lab you will install configure Kubernetes dashbord. 
+In this lab you will install configure Kubernetes dashbord.
 
 ## Installation
 
@@ -16,7 +16,7 @@ Create a proxy to the dashboard:
 kubectl proxy
 ```
 
-Next, to access to the dashboard in the browser, navigate to the following address in the browser of your machine: [Dashboard local URL](http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/
+To access the dashboard in your web browser, click the following link: http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/
 
 > output
 A login page asking for kubeconfig file or a token
