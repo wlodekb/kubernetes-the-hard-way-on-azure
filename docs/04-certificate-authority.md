@@ -315,7 +315,7 @@ cat > kubernetes-csr.json <<EOF
   "names": [
     {
       "C": "IT",
-      "L": "Milam",
+      "L": "Milan",
       "O": "Kubernetes",
       "OU": "Kubernetes The Hard Way",
       "ST": "Italy"
