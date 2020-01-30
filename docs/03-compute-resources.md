@@ -157,7 +157,6 @@ for i in 0 1 2; do
     az vm create -g kubernetes \
         -n controller-${i} \
         --image ${UBUNTULTS} \
-        --generate-ssh-keys \
         --nics controller-${i}-nic \
         --availability-set controller-as \
         --nsg '' \
