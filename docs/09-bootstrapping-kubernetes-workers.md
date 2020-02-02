@@ -7,18 +7,6 @@ In this lab you will bootstrap three Kubernetes worker nodes. The following comp
 The commands in this lab must be run on each worker instance: `worker-0`, `worker-1`, and `worker-2`.
 Azure Instance Metadata Service cannot be used to set custom property. We have used *tags* on each worker VM to defined POD-CIDR used later.
 
-Retrieve the POD CIDR range for the current compute instance and keep it for later.
-
-```shell
-az vm show -g kubernetes --name worker-0 --query "tags" -o tsv
-```
-
-> output
-
-```shell
-10.200.0.0/24
-```
-
 Login to each worker instance using the `az` command to find its public IP and ssh to it. Example:
 
 ```shell
