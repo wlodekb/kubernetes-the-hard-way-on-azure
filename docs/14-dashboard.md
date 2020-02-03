@@ -1,6 +1,6 @@
 # Dashboard configuration
 
-In this lab you will install configure Kubernetes dashbord.
+In this lab you will install configure Kubernetes dashboard.
 
 ## Installation
 
